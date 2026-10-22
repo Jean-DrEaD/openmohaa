@@ -96,6 +96,9 @@ Sys_DefaultHomePath
 */
 static char *Sys_DefaultHomePath( void )
 {
+#ifdef NXDK /* LG 15v3 */
+	return "E:\\TDATA\\4c470001";
+#endif
 	static char homePath[ MAX_OSPATH ] = { 0 };
 
 	if(!*homePath && com_homepath)

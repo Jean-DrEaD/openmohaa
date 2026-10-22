@@ -3579,7 +3579,12 @@ FS_Startup
 */
 static void FS_Startup(const char* gameName)
 {
-	cvar_t *fs_homepath = Cvar_Get("fs_homepath", "", CVAR_INIT|CVAR_PROTECTED);
+	#ifdef NXDK /* LG 15v3: DVD read-only -> homepath no HD */
+cvar_t *fs_homepath = Cvar_Get("fs_homepath", "E:\\TDATA\\4c470001", CVAR_INIT|CVAR_PROTECTED);
+Com_Printf("LG: fs_homepath = %s\n", fs_homepath->string);
+#else
+cvar_t *fs_homepath = Cvar_Get("fs_homepath", "", CVAR_INIT|CVAR_PROTECTED);
+#endif
 	const char *configPath = Sys_DefaultHomeConfigPath();
 	const char *dataPath = Sys_DefaultHomeDataPath();
 	const char *statePath = Sys_DefaultHomeStatePath();
