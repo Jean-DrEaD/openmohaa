@@ -1580,6 +1580,10 @@ NET_Init
 ====================
 */
 void NET_Init( void ) {
+#ifdef NXDK /* LG 15u: single player, sem rede (loopback basta) */
+	Com_Printf("LG: rede desativada (NXDK)\n");
+	return;
+#endif
 #ifdef _WIN32
 	int		r;
 
