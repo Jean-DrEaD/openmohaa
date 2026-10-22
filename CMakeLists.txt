@@ -85,3 +85,25 @@ include(launcher)
 
 include(post_configure)
 #include(installer)
+
+# NXDK_STATIC_GAME: game linkado estatico no XBE
+if(NXDK AND TARGET omohaaded)
+  get_target_property(_lg_game_tgt omohaaded NAME)
+  foreach(_g game fgame omohaaded_game)
+    if(TARGET ${_g})
+      set_property(TARGET omohaaded APPEND PROPERTY LINK_LIBRARIES ${_g})
+      message(STATUS "NXDK_STATIC_GAME: omohaaded <- ${_g}")
+      break()
+    endif()
+  endforeach()
+endif()
+
+# NXDK_FORCE_MULTIPLE: corepp existe no engine e na libgame
+if(NXDK AND TARGET omohaaded)
+  target_link_options(omohaaded PRIVATE "/FORCE:MULTIPLE")
+endif()
+
+# LG lote 15i: isolamento ODR engine x game (nxdk)
+if(TARGET game)
+  target_compile_options(game PRIVATE "-include${CMAKE_SOURCE_DIR}/tools/nxdk-shims/lg_game_rename.h")
+endif()
