@@ -389,10 +389,7 @@
 #define _VectorMA G__VectorMA
 #define _VectorScale G__VectorScale
 #define _VectorSubtract G__VectorSubtract
-#define acos G_acos
-#define ceil G_ceil
 #define checkInheritance G_checkInheritance
-#define fabs G_fabs
 #define g_eventlimit G_g_eventlimit
 #define g_eventstats G_g_eventstats
 #define g_showevents G_g_showevents
@@ -401,7 +398,6 @@
 #define listAllClasses G_listAllClasses
 #define listInheritanceOrder G_listInheritanceOrder
 #define numclassesallocated G_numclassesallocated
-#define sqrt G_sqrt
 #define strlwc G_strlwc
 #define strstrip G_strstrip
 #define totalmemallocated G_totalmemallocated
