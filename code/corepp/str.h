@@ -108,6 +108,12 @@ public:
 
     char  operator[](intptr_t index) const;
     char& operator[](intptr_t index);
+#ifdef NXDK /* LG-NXDK: intptr_t != int no nxdk; evita ambiguidade com operator const char* */
+    char  operator[](int index) const { return operator[]((intptr_t)index); }
+    char& operator[](int index) { return operator[]((intptr_t)index); }
+    char  operator[](unsigned int index) const { return operator[]((intptr_t)index); }
+    char& operator[](unsigned int index) { return operator[]((intptr_t)index); }
+#endif
 
     void operator=(const str& text);
     void operator=(const char *text);

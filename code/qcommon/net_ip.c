@@ -39,7 +39,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #		include <ws2spi.h>
 #	endif
 
+#ifndef LG_NXDK
 typedef int socklen_t;
+#endif
 #	ifdef ADDRESS_FAMILY
 #		define sa_family_t	ADDRESS_FAMILY
 #	else

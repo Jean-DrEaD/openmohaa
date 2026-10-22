@@ -47,3 +47,8 @@ out
 # Flex and Bison
 ####################
 /code/parser/generated
+xbox-probe*.log
+xbe-out/
+cfg.txt
+lgsys.txt
+build-xbox/
