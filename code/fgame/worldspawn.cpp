@@ -618,7 +618,9 @@ World::World()
     level.level_name = level.mapname;
 
     gi.Printf("LG: w soundman t=%d\n", gi.Milliseconds());
+#ifndef NXDK // LG16h: SoundMan.Load trava no Xbox
     SoundMan.Load();
+#endif
 
     // Set the color for the blends.
     level.water_color = Vector(0, 0, 1);
