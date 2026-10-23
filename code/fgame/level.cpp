@@ -1221,12 +1221,12 @@ void Level::SpawnEntities(char *entities, int svsTime)
 
     gi.LoadResource("*147b");
 
-    world->UpdateConfigStrings();
+    { gi.Printf("LG: pl ucfg t=%d\n", gi.Milliseconds()); /* LG16p */ world->UpdateConfigStrings(); }
 
     Event *ev = new Event(EV_Level_PreSpawnSentient);
     PostEvent(ev, EV_SPAWNENTITIES);
 
-    L_ProcessPendingEvents();
+    { gi.Printf("LG: pl pending t=%d\n", gi.Milliseconds()); /* LG16p */ L_ProcessPendingEvents(); }
 
     gi.LoadResource("*148");
 
@@ -1240,7 +1240,7 @@ void Level::SpawnEntities(char *entities, int svsTime)
     //  Check for single-player before pre-creating a player instance
     if (game.maxclients == 1 && g_gametype->integer == GT_SINGLE_PLAYER) {
         spawn_entnum = 0;
-        new Player;
+        { gi.Printf("LG: pl player t=%d\n", gi.Milliseconds()); /* LG16p */ new Player; }
     }
 
     gi.LoadResource("*148b");
@@ -1263,7 +1263,7 @@ void Level::SpawnEntities(char *entities, int svsTime)
     //
     // create landmarks
     //
-    ComputeDMWaypoints();
+    { gi.Printf("LG: pl dmwp t=%d\n", gi.Milliseconds()); /* LG16p */ ComputeDMWaypoints(); }
 }
 
 void Level::ComputeDMWaypoints()
