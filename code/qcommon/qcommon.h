@@ -957,7 +957,11 @@ MISC
 // vsnprintf is ISO/IEC 9899:1999
 // abstracting this to make it portable
 #ifdef _WIN32
+#ifdef NXDK
+#define Q_vsnprintf lg_vsnprintf /* LG 16z6b */
+#else
 #define Q_vsnprintf _vsnprintf
+#endif
 #define Q_snprintf _snprintf
 #else
 #define Q_vsnprintf vsnprintf

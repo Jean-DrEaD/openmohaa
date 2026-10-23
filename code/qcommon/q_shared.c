@@ -1135,7 +1135,12 @@ size_t Q_vsnprintf(char* str, size_t size, const char* format, va_list ap)
 {
 	int retval;
 
+#ifdef NXDK
+	retval = lg_vsnprintf(str, size, format, ap); /* LG 16z6b */
+	if (retval >= (int)size) retval = -1;
+#else
 	retval = _vsnprintf(str, size, format, ap);
+#endif
 
 	if (retval < 0 || retval == size)
 	{
