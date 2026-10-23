@@ -1142,7 +1142,7 @@ void ScriptThreadLabel::SetThread(const ScriptVariable& label)
     switch (label.GetType()) {
     case VARIABLE_STRING:
     case VARIABLE_CONSTSTRING:
-        m_Script = Director.CurrentScriptClass()->GetScript();
+        { ScriptClass *lgSc = Director.CurrentScriptClass(); m_Script = lgSc ? lgSc->GetScript() : NULL; if (!lgSc) { gi.Printf("LG: SetThread sem thread label=%s\n", label.stringValue().c_str()); } } /* LG16q */
         m_Label  = label.constStringValue();
         break;
     case VARIABLE_NONE:
