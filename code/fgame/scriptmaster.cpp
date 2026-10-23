@@ -839,7 +839,7 @@ void ScriptMaster::RemoveTiming(ScriptThread *thread)
 
 ScriptClass *ScriptMaster::CurrentScriptClass(void)
 {
-    return CurrentScriptThread()->GetScriptClass();
+    { gi.Printf("LG: SM 842 CurrentScriptClass t=%d\n", gi.Milliseconds()); /* LG16n SM 842 CurrentScriptClass */ return CurrentScriptThread()->GetScriptClass(); }
 }
 
 void ScriptMaster::CloseGameScript(void)

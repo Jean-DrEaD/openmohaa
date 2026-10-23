@@ -400,7 +400,7 @@ Listener *SpawnArgs::SpawnInternal(void)
         // use the existing node that was loaded
         obj = PathManager.GetSpawnNode(cls);
     } else {
-        obj = (Listener *)cls->newInstance();
+        { obj = (Listener *)cls->newInstance(); gi.Printf("LG: si newinst ok t=%d\n", gi.Milliseconds()); /* LG16n si newinst ok */ }
     }
 
     for (int i = g_spawnlist.NumObjects(); i > 0; i--) {
@@ -569,7 +569,7 @@ Listener *SpawnArgs::SpawnInternal(void)
         }
     }
 
-    return obj;
+    { gi.Printf("LG: si fim t=%d\n", gi.Milliseconds()); /* LG16n si fim */ return obj; }
 }
 
 ClassDef *FindClass(const char *name, qboolean *isModel)
