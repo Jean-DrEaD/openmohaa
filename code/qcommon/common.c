@@ -2238,6 +2238,9 @@ Com_Frame
 =================
 */
 void Com_Frame( void ) {
+#ifdef NXDK /* LG 15x heartbeat */
+	{ static int lg_fc = 0; if ((lg_fc++ % 600) == 0) Com_Printf("LG: frame %d\n", lg_fc); }
+#endif
 
 	int		msec, minMsec;
 	int		timeVal, timeValSV;

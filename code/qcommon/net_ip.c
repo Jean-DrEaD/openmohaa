@@ -1667,6 +1667,10 @@ Sleeps msec or until something happens on the network
 */
 void NET_Sleep(int msec)
 {
+#ifdef NXDK /* LG 15x: sem sockets */
+	{ if (msec > 0) Sleep((unsigned long)msec); }
+	return;
+#endif
 	struct timeval timeout;
 	fd_set fdr;
 	int retval;
