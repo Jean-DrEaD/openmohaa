@@ -455,17 +455,26 @@ void SV_Startup( void ) {
 	if ( svs.initialized ) {
 		Com_Error( ERR_FATAL, "SV_Startup: svs.initialized already set" );
 	}
+	Com_Printf("LG: st %d t=%d\n", __LINE__, Sys_Milliseconds());
 	SV_BoundMaxClients( 1 );
+	Com_Printf("LG: st %d t=%d\n", __LINE__, Sys_Milliseconds());
 	SV_ClientsAlloc();
 
 	svs.initialized = qtrue;
 	memset( last_mapname, 0, sizeof( last_mapname ) );
 
+	Com_Printf("LG: st %d t=%d\n", __LINE__, Sys_Milliseconds());
+#ifndef NXDK
 	SV_InitGamespy();
+#endif
+	Com_Printf("LG: st %d t=%d\n", __LINE__, Sys_Milliseconds());
 	Cvar_Set( "sv_running", "1" );
 	
 	// Join the ipv6 multicast group now that a map is running so clients can scan for us on the local network.
+	Com_Printf("LG: st %d t=%d\n", __LINE__, Sys_Milliseconds());
+#ifndef NXDK
 	NET_JoinMulticast6();
+#endif
 }
 
 /*
