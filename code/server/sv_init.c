@@ -1065,12 +1065,17 @@ void SV_ServerLoaded( void ) {
 
 	// notify the new time
 	svs.serverLagTime = svs.time;
+	Com_Printf("LG: sl %d t=%d\n", __LINE__, Sys_Milliseconds());
 	ge->SetTime( svs.startTime, svs.time );
+	Com_Printf("LG: sl %d t=%d\n", __LINE__, Sys_Milliseconds());
 	SV_FinishSvsTimeFixups();
 
 	// notify the game dll
+	Com_Printf("LG: sl %d t=%d\n", __LINE__, Sys_Milliseconds());
 	ge->ServerSpawned();
+	Com_Printf("LG: sl %d t=%d\n", __LINE__, Sys_Milliseconds());
 
+	Com_Printf("LG: sl %d t=%d\n", __LINE__, Sys_Milliseconds());
 	p = ge->errorMessage;
 	if( p )
 	{
