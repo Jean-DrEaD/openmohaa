@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // listener.cpp : Listener.
 
 #include "../script/scriptvariable.h"
+extern "C" void debugPrint(const char *format, ...); /* LG16u */
 #include "../script/scriptexception.h"
 #include "Linklist.h"
 
@@ -4637,7 +4638,7 @@ ExecuteThreadInternal
 */
 void Listener::ExecuteThreadInternal(Event *ev, ScriptVariable& returnValue)
 {
-    ScriptThread *thread = CreateThreadInternal(ev->GetValue(1));
+    ScriptThread *thread = CreateThreadInternal(ev->GetValue(1)); if (!thread) { return; } /* LG16u */
 
     thread->ScriptExecute(&ev->data[1], ev->dataSize - 1, returnValue);
 }
@@ -4665,7 +4666,7 @@ WaitExecuteThreadInternal
 void Listener::WaitExecuteThreadInternal(Event *ev, ScriptVariable& returnValue)
 {
     ScriptThread *currentThread = Director.CurrentScriptThread();
-    ScriptThread *thread        = CreateThreadInternal(ev->GetValue(1));
+    ScriptThread *thread        = CreateThreadInternal(ev->GetValue(1)); if (!thread) { return; } /* LG16u */
 
     thread->Register(0, currentThread);
 
@@ -4723,7 +4724,7 @@ ScriptThread *Listener::CreateThreadInternal(const ScriptVariable& label)
     ScriptClass  *scriptClass;
 
     if (label.GetType() == VARIABLE_STRING || label.GetType() == VARIABLE_CONSTSTRING) {
-        scriptClass = Director.CurrentScriptClass();
+        scriptClass = Director.CurrentScriptClass(); if (!scriptClass) { debugPrint("LG: CTI sem thread label=%s\n", label.stringValue().c_str()); return NULL; } /* LG16u */
         scr         = scriptClass->GetScript();
 
         if (label.GetType() == VARIABLE_CONSTSTRING) {
