@@ -816,6 +816,74 @@ void CM_FreeLump( gamelump_t *lump )
 	}
 }
 
+#ifdef NXDK
+/* LG lote 16a: BSP FAKK v42 (Alice) -> layout MOHAA */
+#define LG_FAKK_VERSION   42
+#define LG_FAKK_LEAF_SIZE 48
+#define LG_FAKK(v) ((v) == LG_FAKK_VERSION)
+static lump_t lg_empty_lump;
+static int lg_fakk, lg_last;
+static const int lg_fakk_map[HEADER_LUMPS] = {
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, 10, 11, 13, 14, 15,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+
+static lump_t *LG_Lump( dheader_t *h, int lump ) {
+    lg_fakk = LG_FAKK( h->version );
+    lg_last = lump;
+    if ( !lg_fakk ) return Q_GetLumpByVersion( h, lump );
+    if ( lump < 0 || lump >= HEADER_LUMPS || lg_fakk_map[lump] < 0 ) {
+        lg_empty_lump.fileofs = 0; lg_empty_lump.filelen = 0;
+        return &lg_empty_lump;
+    }
+    return &h->lumps[ lg_fakk_map[lump] ];
+}
+
+static void LG_Repack( gamelump_t *g ) {
+    int n, i, outSize; byte *in, *dst;
+    if ( !lg_fakk || !g->length ) return;
+    in = ( byte * )g->buffer;
+    if ( lg_last == LUMP_SHADERS ) {
+        if ( g->length % 76 ) Com_Error( ERR_DROP, "LG FAKK shaders len %d", g->length );
+        n = g->length / 76; outSize = n * sizeof( dshader_t );
+        dst = Hunk_AllocateTempMemory( outSize ); memset( dst, 0, outSize );
+        for ( i = 0; i < n; i++ ) {
+            dshader_t *o = ( dshader_t * )dst + i; byte *s = in + i * 76;
+            memcpy( o->shader, s, 64 );
+            memcpy( &o->surfaceFlags, s + 64, 4 );
+            memcpy( &o->contentFlags, s + 68, 4 );
+            memcpy( &o->subdivisions, s + 72, 4 );
+        }
+    } else if ( lg_last == LUMP_BRUSHSIDES ) {
+        if ( g->length % 8 ) Com_Error( ERR_DROP, "LG FAKK brushsides len %d", g->length );
+        n = g->length / 8; outSize = n * sizeof( dbrushside_t );
+        dst = Hunk_AllocateTempMemory( outSize ); memset( dst, 0, outSize );
+        for ( i = 0; i < n; i++ ) {
+            dbrushside_t *o = ( dbrushside_t * )dst + i;
+            memcpy( &o->planeNum, in + i * 8, 4 );
+            memcpy( &o->shaderNum, in + i * 8 + 4, 4 );
+        }
+    } else if ( lg_last == LUMP_LEAFS ) {
+        if ( g->length % LG_FAKK_LEAF_SIZE )
+            Com_Error( ERR_DROP, "LG FAKK leafs len %d (%%48=%d %%64=%d)", g->length, g->length % 48, g->length % 64 );
+        n = g->length / LG_FAKK_LEAF_SIZE; outSize = n * sizeof( dleaf_t );
+        dst = Hunk_AllocateTempMemory( outSize ); memset( dst, 0, outSize );
+        for ( i = 0; i < n; i++ ) memcpy( ( dleaf_t * )dst + i, in + i * LG_FAKK_LEAF_SIZE, 48 );
+    } else return;
+    Com_Printf( "LG: FAKK repack lump %d: %d -> %d bytes\n", lg_last, g->length, outSize );
+    Hunk_FreeTempMemory( g->buffer );
+    g->buffer = dst; g->length = outSize;
+}
+
+static int LG_LoadLump( fileHandle_t h, lump_t *l, gamelump_t *g, int size ) {
+    int r = CM_LoadLump( h, l, g, size );
+    LG_Repack( g );
+    return r;
+}
+#define Q_GetLumpByVersion LG_Lump
+#define CM_LoadLump        LG_LoadLump
+#else
+#define LG_FAKK(v) 0
+#endif
 #define _R( id ) UI_LoadResource( "*" #id )
 
 /*
@@ -891,7 +959,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 		((int *)&header)[i] = LittleLong ( ((int *)&header)[i]);
 	}
 
-	if ( header.version < BSP_MIN_VERSION || header.version > BSP_MAX_VERSION ) {
+	if ( !LG_FAKK( header.version ) && ( header.version < BSP_MIN_VERSION || header.version > BSP_MAX_VERSION ) ) {
 		Com_Error (ERR_DROP, "CM_LoadMap: %s has wrong version number (%i should be between %i and %i)"
 		, name, header.version, BSP_MIN_VERSION, BSP_MAX_VERSION );
 	}
