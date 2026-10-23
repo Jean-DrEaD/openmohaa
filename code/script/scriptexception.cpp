@@ -30,8 +30,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 int ScriptException::next_abort      = 0;
 int ScriptException::next_bIsForAnim = 0;
 
+#ifdef NXDK // LG16j: mostra ScriptException (sem runtime EH)
+extern "C" void debugPrint(const char *format, ...);
+#endif
 void ScriptException::CreateException(const char *data)
 {
+#ifdef NXDK
+    debugPrint("LG: SE %.200s\n", data ? data : "(null)");
+#endif
     string = data;
 
     bAbort          = next_abort;
