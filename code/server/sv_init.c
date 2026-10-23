@@ -597,7 +597,7 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 	svs.autosave = qfalse;
 	svs.soundsNeedLoad = qfalse;
 
-	Com_Unpause();
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 	
 	differentmap = qtrue;
 
@@ -621,7 +621,7 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 		Q_strncpyz( mapname, server, sizeof(mapname) );
 	}
 
-	strncpy( svs.mapName, mapname, sizeof( svs.mapName ) );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	if( svs.initialized )
 	{
@@ -647,13 +647,13 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 	SV_InitRadar();
 
 	sv.restarting = ( keep_scripts || !differentmap );
-	strncpy( last_mapname, mapname, sizeof( last_mapname ) );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
 	CL_MapLoading( differentmap, mapname );
 
-	UI_LoadResource( "*132" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	if( !loadgame )
 	{
@@ -696,14 +696,14 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 	ge->Cleanup( keep_scripts );
 	ge->SetTime( svs.startTime, svs.time );
 
-	UI_LoadResource( "*133" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
-	SV_ClearModelUserCounts();
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
-	TIKI_End();
-	TIKI_Begin();
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
-	UI_LoadResource( "*134" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	if( differentmap )
 	{
@@ -725,9 +725,9 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 		Cvar_Set( "mapname", server );
 	}
 
-	CL_InitClientSavedData();
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
-	UI_LoadResource( "*135" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	if( differentmap )
 	{
@@ -740,15 +740,15 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 		sv.serverId = com_frameTime;
 	}
 
-	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	// toggle the server bit so clients can detect that a
 	// server has changed
 	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 
-	CM_ResetAreaPortals();
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
-	UI_LoadResource( "*136" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	// clear soundtrack
 	if( !loadgame ) {
@@ -758,7 +758,7 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 	// clear physics interaction links
 	SV_ClearWorld();
 
-	UI_LoadResource( "*137" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	// set game dll map
 	ge->SetMap( sv_mapname->string );
@@ -767,7 +767,7 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 		ge->Precache();
 	}
 
-	UI_LoadResource( "*138" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	if( loadgame )
 	{
@@ -785,7 +785,7 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 		}
 	}
 
-	UI_LoadResource( "*139" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	if( !loadgame )
 	{
@@ -836,7 +836,7 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 		svs.mapTime = svs.time - svs.startTime;
 	}
 
-	UI_LoadResource( "*142" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	if( differentmap )
 	{
@@ -965,12 +965,12 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 		}
 	}
 
-	Q_strncpyz(svs.gameName, "current", sizeof(svs.gameName) );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	iEnd = Sys_Milliseconds();
-	Com_Printf( "------ Server Initialization Complete ------ %5.2f seconds\n", ( float )iEnd / 1000.0f );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
-	UI_LoadResource( "*143" );
+Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
 
 	if( g_gametype->integer != GT_SINGLE_PLAYER ) {
 		SV_ServerLoaded();
