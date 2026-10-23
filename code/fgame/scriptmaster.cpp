@@ -900,7 +900,11 @@ GameScript *ScriptMaster::GetGameScriptInternal(str& filename)
     gi.FS_FreeFile(sourceBuffer);
 
     if (!scr->successCompile) {
+#ifdef NXDK
+        gi.Printf("LG: scr falhou %s\n", filename.c_str()); return NULL; /* LG16x */
+#else
         throw ScriptException("Script '%s' was not properly loaded", filename.c_str());
+#endif
     }
 
     return scr;
@@ -919,7 +923,11 @@ GameScript *ScriptMaster::GetGameScript(str filename, qboolean recompile)
 
     if (scr != NULL && !recompile) {
         if (!scr->successCompile) {
+#ifdef NXDK
+            gi.Printf("LG: scr falhou %s\n", filename.c_str()); return NULL; /* LG16x */
+#else
             throw ScriptException("Script '%s' was not properly loaded\n", filename.c_str());
+#endif
         }
 
         return scr;

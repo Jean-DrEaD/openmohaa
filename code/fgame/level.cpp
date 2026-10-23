@@ -1498,7 +1498,7 @@ void Level::PreSpawnSentient(Event *ev)
         gi.DPrintf("Adding script: '%s'\n", m_mapscript.c_str());
 
         m_LoopProtection = false;
-        Director.ExecuteThread(m_mapscript);
+        if (script) { Director.ExecuteThread(m_mapscript); } else { gi.Printf("LG: level script pulado\n"); } /* LG16x */
         m_LoopProtection = true;
     }
 
