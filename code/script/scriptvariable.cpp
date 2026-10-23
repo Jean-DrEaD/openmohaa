@@ -1215,6 +1215,23 @@ str ScriptVariable::stringValue() const
     return "";
 }
 
+#ifdef NXDK // LG16l
+static int LG_ParseVec3(const char *s, float *x, float *y, float *z)
+{
+    float *o[3] = {x, y, z};
+    int    n    = 0;
+    char  *e;
+    while (n < 3) {
+        while (*s == ' ' || *s == '\t' || *s == '(' || *s == ',') s++;
+        double v = strtod(s, &e);
+        if (e == s) break;
+        *o[n++] = (float)v;
+        s       = e;
+    }
+    return n;
+}
+#endif
+
 Vector ScriptVariable::vectorValue(void) const
 {
     const char *string;
@@ -1231,6 +1248,12 @@ Vector ScriptVariable::vectorValue(void) const
         if (strcmp(string, "") == 0) {
             throw ScriptException("cannot cast empty string to vector");
         }
+#ifdef NXDK // LG16l: sscanf %f do PDCLib falha; parser proprio
+        if (LG_ParseVec3(string, &x, &y, &z) != 3) {
+            throw ScriptException("Couldn't convert string to vector - malformed string '%s'", string);
+        }
+        return Vector(x, y, z);
+#endif
 
         if (*string == '(') {
             if (sscanf(string, "(%f %f %f)", &x, &y, &z) != 3) {
