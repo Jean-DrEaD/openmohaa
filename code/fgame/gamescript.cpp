@@ -264,7 +264,7 @@ unsigned char *StateScript::FindLabel(const_str label)
     if (s) {
         // check if the label is a private function
         if (s->isprivate) {
-            scriptClass = Director.CurrentScriptClass();
+            { scriptClass = Director.CurrentScriptClass(); if (!scriptClass) { gi.Printf("LG: FindLabel privado '%s' t=%d\n", Director.GetString(label).c_str(), gi.Milliseconds()); } } /* LG16r */
 
             if (scriptClass) {
                 script = scriptClass->GetScript();
@@ -277,7 +277,7 @@ unsigned char *StateScript::FindLabel(const_str label)
             }
         }
 
-        return s->codepos;
+        { if (s->isprivate) { gi.Printf("LG: FindLabel ret t=%d\n", gi.Milliseconds()); } return s->codepos; } /* LG16r */
     } else {
         return NULL;
     }
