@@ -597,7 +597,8 @@ void SV_SpawnServer( const char *server, qboolean loadgame, qboolean restart, qb
 	svs.autosave = qfalse;
 	svs.soundsNeedLoad = qfalse;
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	Com_Unpause();
 	
 	differentmap = qtrue;
 
@@ -614,14 +615,17 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 	spawnpos = strchr( server, '$' );
 	if( spawnpos )
 	{
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		Q_strncpyz( mapname, server, spawnpos - server + 1 );
 	}
 	else
 	{
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		Q_strncpyz( mapname, server, sizeof(mapname) );
 	}
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	strncpy( svs.mapName, mapname, sizeof( svs.mapName ) );
 
 	if( svs.initialized )
 	{
@@ -634,12 +638,14 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			//  OG  doesn't check for different map when changing the max clients
 			//  which means the snapshot entities memory isn't reallocated
 			) {
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			SV_ChangeMaxClients();
 		}
 	}
 	else
 	{
 		keep_scripts = qfalse;
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		SV_Startup();
 	}
 
@@ -647,13 +653,15 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 	SV_InitRadar();
 
 	sv.restarting = ( keep_scripts || !differentmap );
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	strncpy( last_mapname, mapname, sizeof( last_mapname ) );
 
 	// if not running a dedicated server CL_MapLoading will connect the client to the server
 	// also print some status stuff
 	CL_MapLoading( differentmap, mapname );
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*132" );
 
 	if( !loadgame )
 	{
@@ -696,26 +704,34 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 	ge->Cleanup( keep_scripts );
 	ge->SetTime( svs.startTime, svs.time );
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*133" );
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	SV_ClearModelUserCounts();
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	TIKI_End();
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	TIKI_Begin();
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*134" );
 
 	if( differentmap )
 	{
 		char filename[ MAX_QPATH ];
 
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		TIKI_FreeAll();
 		if ( CL_UseLargeLightmap( mapname ) ) {
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Com_sprintf( filename, sizeof( filename ), "maps/%s.bsp", mapname );
 		} else {
 			// Added in 2.0
 			Com_sprintf( filename, sizeof( filename ), "maps/%s_sml.bsp", mapname );
 		}
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		CM_LoadMap( filename, qfalse, &checksum );
 
 		// set checksum
@@ -725,9 +741,11 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		Cvar_Set( "mapname", server );
 	}
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	CL_InitClientSavedData();
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*135" );
 
 	if( differentmap )
 	{
@@ -740,25 +758,30 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		sv.serverId = com_frameTime;
 	}
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	Cvar_Set( "sv_serverid", va( "%i", sv.serverId ) );
 
 	// toggle the server bit so clients can detect that a
 	// server has changed
 	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	CM_ResetAreaPortals();
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*136" );
 
 	// clear soundtrack
 	if( !loadgame ) {
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		SV_SetConfigstring( CS_MUSIC, "none" );
 	}
 
 	// clear physics interaction links
 	SV_ClearWorld();
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*137" );
 
 	// set game dll map
 	ge->SetMap( sv_mapname->string );
@@ -767,7 +790,8 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		ge->Precache();
 	}
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*138" );
 
 	if( loadgame )
 	{
@@ -775,6 +799,7 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		{
 			if( differentmap && com_dedicated->integer )
 			{
+				Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 				TIKI_FinishLoad();
 			}
 		}
@@ -785,34 +810,41 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		}
 	}
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*139" );
 
 	if( !loadgame )
 	{
 		// load and spawn all other entities
 		svs.areabits_warning_time = 0;
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		UI_LoadResource( "*139a" );
 
 		// tell the game dll to spawn entities
 		ge->SpawnEntities( CM_EntityString(), svs.time );
 
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		UI_LoadResource( "*140" );
 
 		p = ge->errorMessage;
 		if( p )
 		{
 			ge->errorMessage = NULL;
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Com_Error(ERR_DROP, "%s", p);
 		}
 
 		// save persistant structures
 		if( bTransition ) {
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			SV_ArchivePersistantFile( qtrue );
 		}
 
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		UI_LoadResource( "*141" );
 
 		if( differentmap && com_dedicated->integer ) {
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			TIKI_FinishLoad();
 		}
 
@@ -829,6 +861,7 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			if( p )
 			{
 				ge->errorMessage = NULL;
+				Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 				Com_Error(ERR_DROP, "%s", p);
 			}
 		}
@@ -836,7 +869,8 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		svs.mapTime = svs.time - svs.startTime;
 	}
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*142" );
 
 	if( differentmap )
 	{
@@ -858,6 +892,7 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 					if( p )
 					{
 						ge->errorMessage = NULL;
+						Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 						Com_Error(ERR_DROP, "%s", p);
 					}
 
@@ -873,6 +908,7 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 				}
 				else
 				{
+					Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 					SV_DropClient( &svs.clients[ i ], denied );
 				}
 			}
@@ -882,15 +918,20 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			// the server sends these to the clients so they will only
 			// load pk3s also loaded at the server
 			p = FS_LoadedPakChecksums();
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Cvar_Set( "sv_paks", p );
 			if (strlen(p) == 0) {
+				Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 				Com_Printf( "WARNING: sv_pure set but no PK3 files loaded\n" );
 			}
 			p = FS_LoadedPakNames();
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Cvar_Set( "sv_pakNames", p );
 		}
 		else {
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Cvar_Set( "sv_paks", "" );
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Cvar_Set( "sv_pakNames", "" );
 		}
 
@@ -898,8 +939,10 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			// the server sends these to the clients so they can figure
 			// out which pk3s should be auto-downloaded
 			p = FS_ReferencedPakChecksums();
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Cvar_Set("sv_referencedPaks", p);
 			p = FS_ReferencedPakNames();
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Cvar_Set("sv_referencedPakNames", p);
         }
         else {
@@ -907,14 +950,17 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
             //  Don't export the pak list if download is disabled
 
 			Cvar_Set("sv_referencedPaks", "");
+			Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 			Cvar_Set("sv_referencedPakNames", "");
 		}
 
 		// save systeminfo and serverinfo strings
 		Q_strncpyz( systemInfo, Cvar_InfoString_Big( CVAR_SYSTEMINFO ), sizeof( systemInfo ) );
 		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		SV_SetConfigstring( CS_SYSTEMINFO, systemInfo );
 
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO ) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 
@@ -927,6 +973,7 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		// send a heartbeat now so the master will get up to date info
 		SV_Heartbeat_f();
 
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		Hunk_SetMark();
 
 		if( g_gametype->integer != GT_SINGLE_PLAYER ) {
@@ -950,6 +997,7 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 				if( p )
 				{
 					ge->errorMessage = NULL;
+					Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 					Com_Error(ERR_DROP, "%s", p);
 				}
 
@@ -965,14 +1013,18 @@ Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		}
 	}
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	Q_strncpyz(svs.gameName, "current", sizeof(svs.gameName) );
 
 	iEnd = Sys_Milliseconds();
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	Com_Printf( "------ Server Initialization Complete ------ %5.2f seconds\n", ( float )iEnd / 1000.0f );
 
-Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds()); 
+	Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
+	UI_LoadResource( "*143" );
 
 	if( g_gametype->integer != GT_SINGLE_PLAYER ) {
+		Com_Printf("LG: sv %d t=%d\n", __LINE__, Sys_Milliseconds());
 		SV_ServerLoaded();
 	}
 }
