@@ -2383,7 +2383,9 @@ void Com_Frame( void ) {
         timeBeforeServer = Sys_Milliseconds();
     }
 
+	{ static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: cf %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 	SV_Frame( msec );
+	{ static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: cf %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 
 	// if "dedicated" has been modified, start up
 	// or shut down the client system.

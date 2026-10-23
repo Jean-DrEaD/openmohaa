@@ -1077,6 +1077,7 @@ void SV_ServerLoaded( void ) {
 
 	Com_Printf("LG: sl %d t=%d\n", __LINE__, Sys_Milliseconds());
 	p = ge->errorMessage;
+	{ static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: sz %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 	if( p )
 	{
 		ge->errorMessage = NULL;

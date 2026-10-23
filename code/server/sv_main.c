@@ -1132,7 +1132,9 @@ void SV_Frame( int msec ) {
 			const char *err;
 
 			// let everything in the world think and move
+			{ static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: rf %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 			ge->RunFrame( svs.time, frameMsec );
+			{ static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: rf %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 
 			err = ge->errorMessage;
 			if( err )
