@@ -212,6 +212,20 @@ static const char *lg_alice_cls[][2] = {
     {"Enemies_Bloodrose", "script_model"},
     {"Enemies_AntLion-UnderGround", "script_model"},
     {"Enemies_AntLion", "script_model"},
+    {"ambient_vine", "script_model"},
+    {"ambient_grasswall_03", "script_model"},
+    {"ambient_grasswall_01", "script_model"},
+    {"ambient_shroom_01", "script_model"},
+    {"ambient_shroom_02", "script_model"},
+    {"ambient_shroom_06", "script_model"},
+    {"ambient_shroom_07", "script_model"},
+    {"ambient_root", "script_model"},
+    {"emitter_SmallFire1", "script_model"},
+    {"Item_MetaEssence_Small", "script_model"},
+    {"Item_MetaEssence_Medium", "script_model"},
+    {"Item_DarkenedLookingGlass", "script_model"},
+    {"Item_WeaponPickup_DemonDice", "script_model"},
+    {"trigger_catmessage", "trigger_multiple"},
 };
 static const char *LG_AliceClass(const char *cn)
 {
