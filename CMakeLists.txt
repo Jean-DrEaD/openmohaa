@@ -100,7 +100,7 @@ endif()
 
 # NXDK_FORCE_MULTIPLE: corepp existe no engine e na libgame
 if(NXDK AND TARGET omohaaded)
-  target_link_options(omohaaded PRIVATE "/FORCE:MULTIPLE")
+  # LG 16z9e: target_link_options(omohaaded PRIVATE "/FORCE:MULTIPLE")
 endif()
 
 # LG lote 15i: isolamento ODR engine x game (nxdk)
