@@ -98,8 +98,8 @@ list(APPEND COMMON_SOURCES
 # Gamespy
 
 list(APPEND SERVER_SOURCES
-	${SOURCE_DIR}/gamespy/sv_gamespy.c
-	${SOURCE_DIR}/gamespy/sv_gqueryreporting.c
+#LG16z10c 	${SOURCE_DIR}/gamespy/sv_gamespy.c
+#LG16z10c 	${SOURCE_DIR}/gamespy/sv_gqueryreporting.c
 )
 
 include_directories(${SOURCE_DIR}/qcommon)
