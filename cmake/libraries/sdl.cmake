@@ -2,6 +2,11 @@ if(NOT BUILD_CLIENT)
     return()
 endif()
 
+# LG18e: sem SDL no nxdk
+if(NXDK)
+    return()
+endif()
+
 if(EMSCRIPTEN)
     # Emscripten provides its own self contained SDL setup
     list(APPEND CLIENT_COMPILE_OPTIONS -sUSE_SDL=2)

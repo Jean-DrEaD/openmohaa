@@ -5,6 +5,12 @@ endif()
 include(utils/set_output_dirs)
 include(renderer_common)
 
+# LG18e: renderer nulo no nxdk (sem qgl)
+if(NXDK)
+    set(RENDERER_GL1_BINARY_SOURCES ${SOURCE_DIR}/renderernull/tr_null.c)
+    return()
+endif()
+
 set(RENDERER_GL1_SOURCES
     ${SOURCE_DIR}/renderergl1/tr_backend.c
     ${SOURCE_DIR}/renderergl1/tr_bsp.c

@@ -65,6 +65,14 @@ list(APPEND CLIENT_SOURCES
 	${SOURCE_DIR}/gamespy/cl_gamespy.c
 )
 
+# LG18e: sem SDL e sem GameSpy no nxdk
+if(NXDK)
+    list(REMOVE_ITEM CLIENT_SOURCES
+        ${SOURCE_DIR}/sdl/sdl_input.c
+        ${SOURCE_DIR}/sdl/sdl_mouse.c
+        ${SOURCE_DIR}/gamespy/cl_gamespy.c)
+endif()
+
 file(GLOB_RECURSE UI_SOURCES "${SOURCE_DIR}/uilib/*.c" "${SOURCE_DIR}/uilib/*.cpp")
 
 add_git_dependency(${SOURCE_DIR}/client/cl_console.c)
