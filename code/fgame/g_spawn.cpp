@@ -201,6 +201,21 @@ Finds the spawn function for the entity and returns ClassDef *
 ===============
 */
 
+#ifdef NXDK // LG17n: classname Alice -> classe OpenMoHAA
+extern "C" void debugPrint(const char *format, ...);
+static const char *lg_alice_cls[][2] = {
+    {"Enemies_Centipede", "Actor"},
+};
+static const char *LG_AliceClass(const char *cn)
+{
+    for (size_t i = 0; i < sizeof(lg_alice_cls) / sizeof(lg_alice_cls[0]); i++) {
+        if (!Q_stricmp(cn, lg_alice_cls[i][0])) {
+            return lg_alice_cls[i][1];
+        }
+    }
+    return NULL;
+}
+#endif
 ClassDef *SpawnArgs::getClassDef(qboolean *tikiWasStatic)
 {
     const char  *classname;
@@ -237,6 +252,15 @@ ClassDef *SpawnArgs::getClassDef(qboolean *tikiWasStatic)
         if (!cls) {
             cls = getClass(classname);
         }
+#ifdef NXDK
+        if (!cls) {
+            const char *lg_m = LG_AliceClass(classname);
+            if (lg_m) {
+                cls = getClass(lg_m);
+                debugPrint("LG: cls %s -> %s %s\n", classname, lg_m, cls ? "ok" : "FALHOU");
+            }
+        }
+#endif
     }
 
     if (!cls) {
