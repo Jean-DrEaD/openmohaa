@@ -2,7 +2,9 @@ include_guard(GLOBAL)
 
 include(utils/add_git_dependency)
 include(utils/disable_warnings)
-include(gamespy)
+#LG16z10f include(gamespy)
+include_directories(${SOURCE_DIR}/gamespy/common)
+include_directories(${SOURCE_DIR}/gamespy/gcdkey)
 
 set(COMMON_SOURCES
     ${SOURCE_DIR}/qcommon/alias.c
@@ -32,7 +34,7 @@ set(COMMON_SOURCES
     ${SOURCE_DIR}/qcommon/q_math.c
     ${SOURCE_DIR}/qcommon/q_shared.c
     ${SOURCE_DIR}/qcommon/unzip.c
-    ${SOURCE_DIR}/gamespy/q_gamespy.c
+#LG16z10f     ${SOURCE_DIR}/gamespy/q_gamespy.c
 )
 
 disable_warnings(
