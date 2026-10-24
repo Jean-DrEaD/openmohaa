@@ -1144,29 +1144,24 @@ void Level::SpawnEntities(char *entities, int svsTime)
 
     // set up time so functions still have valid times
     setTime(svsTime);
-    gi.Printf("LG: se inicio t=%d\n", gi.Milliseconds());
     setFrametime(50);
 
     gi.LoadResource("*144");
 
     setSkill(skill->integer);
-    gi.Printf("LG: se skill t=%d\n", gi.Milliseconds());
 
     // reset out count of the number of game traces
     sv_numtraces = 0;
 
     // parse world
     entities     = args.Parse(entities);
-    gi.Printf("LG: se parse t=%d\n", gi.Milliseconds());
     spawn_entnum = ENTITYNUM_WORLD;
     args.SpawnInternal();
-    gi.Printf("LG: se world t=%d\n", gi.Milliseconds());
 
     gi.LoadResource("*147");
 
     // Set up for a new map
     PathManager.LoadNodes();
-    gi.Printf("LG: se nodes t=%d\n", gi.Milliseconds());
 
     gi.LoadResource("*147a");
 
@@ -1194,7 +1189,6 @@ void Level::SpawnEntities(char *entities, int svsTime)
             }
         }
 
-        { static int lgN = 0; const char *lgC = args.getArg("classname"); gi.Printf("LG: le %d %s t=%d\n", ++lgN, lgC ? lgC : "?", gi.Milliseconds()); }
         listener = args.SpawnInternal();
 
         if (listener) {
@@ -1221,12 +1215,12 @@ void Level::SpawnEntities(char *entities, int svsTime)
 
     gi.LoadResource("*147b");
 
-    { gi.Printf("LG: pl ucfg t=%d\n", gi.Milliseconds()); /* LG16p */ world->UpdateConfigStrings(); }
+    world->UpdateConfigStrings();
 
     Event *ev = new Event(EV_Level_PreSpawnSentient);
     PostEvent(ev, EV_SPAWNENTITIES);
 
-    { gi.Printf("LG: pl pending t=%d\n", gi.Milliseconds()); /* LG16p */ L_ProcessPendingEvents(); }
+    L_ProcessPendingEvents();
 
     gi.LoadResource("*148");
 
@@ -1240,7 +1234,7 @@ void Level::SpawnEntities(char *entities, int svsTime)
     //  Check for single-player before pre-creating a player instance
     if (game.maxclients == 1 && g_gametype->integer == GT_SINGLE_PLAYER) {
         spawn_entnum = 0;
-        { gi.Printf("LG: pl player t=%d\n", gi.Milliseconds()); /* LG16p */ new Player; }
+        new Player;
     }
 
     gi.LoadResource("*148b");
@@ -1263,7 +1257,7 @@ void Level::SpawnEntities(char *entities, int svsTime)
     //
     // create landmarks
     //
-    { gi.Printf("LG: pl dmwp t=%d\n", gi.Milliseconds()); /* LG16p */ ComputeDMWaypoints(); }
+    ComputeDMWaypoints();
 }
 
 void Level::ComputeDMWaypoints()

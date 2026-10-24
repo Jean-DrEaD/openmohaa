@@ -277,7 +277,7 @@ unsigned char *StateScript::FindLabel(const_str label)
             }
         }
 
-        { if (s->isprivate) { gi.Printf("LG: FindLabel ret t=%d\n", gi.Milliseconds()); } return s->codepos; } /* LG16r */
+        return s->codepos;
     } else {
         return NULL;
     }

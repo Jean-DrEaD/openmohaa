@@ -266,7 +266,6 @@ static void SV_Map_f( void ) {
 
 	// start up the map
 	SV_SpawnServer( mapname, qfalse, qfalse, qfalse );
-	{ static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: mp %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 
 	if( g_gametype->integer == GT_SINGLE_PLAYER ) {
 		svs.autosave = qtrue;

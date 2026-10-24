@@ -844,7 +844,7 @@ void ScriptSlave::DoMove(Event *ev)
 void ScriptSlave::WaitMove(Event *ev)
 {
     NewMove();
-    { gi.Printf("LG: SS 847 Register t=%d\n", gi.Milliseconds()); /* LG16n SS 847 Register */ Register(0, Director.CurrentScriptThread()); }
+    Register(0, Director.CurrentScriptThread());
 }
 
 void ScriptSlave::Stop(Event *ev)

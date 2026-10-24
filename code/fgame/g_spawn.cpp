@@ -378,11 +378,9 @@ Listener *SpawnArgs::SpawnInternal(void)
 
     t1 = gi.Milliseconds();
 
-    gi.Printf("LG: si inicio t=%d\n", gi.Milliseconds());
     classname = getArg("classname", "Unspecified");
     cls       = getClassDef(&tikiWasStatic);
 
-    gi.Printf("LG: si getclass cls=%p t=%d\n", (void *)cls, gi.Milliseconds());
     if (!cls) {
         if (!tikiWasStatic) {
             gi.DPrintf("%s doesn't have a spawn function\n", classname.c_str());
@@ -395,12 +393,11 @@ Listener *SpawnArgs::SpawnInternal(void)
         return NULL;
     }
 
-    gi.Printf("LG: si cls ok %s t=%d\n", classname.c_str(), gi.Milliseconds());
     if (checkInheritance(PathNode::classinfostatic(), cls)) {
         // use the existing node that was loaded
         obj = PathManager.GetSpawnNode(cls);
     } else {
-        { obj = (Listener *)cls->newInstance(); gi.Printf("LG: si newinst ok t=%d\n", gi.Milliseconds()); /* LG16n si newinst ok */ }
+        obj = (Listener *)cls->newInstance();
     }
 
     for (int i = g_spawnlist.NumObjects(); i > 0; i--) {
@@ -569,7 +566,7 @@ Listener *SpawnArgs::SpawnInternal(void)
         }
     }
 
-    { gi.Printf("LG: si fim t=%d\n", gi.Milliseconds()); /* LG16n si fim */ return obj; }
+    return obj;
 }
 
 ClassDef *FindClass(const char *name, qboolean *isModel)

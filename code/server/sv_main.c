@@ -1132,9 +1132,7 @@ void SV_Frame( int msec ) {
 			const char *err;
 
 			// let everything in the world think and move
-			{ static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: rf %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 			ge->RunFrame( svs.time, frameMsec );
-			{ static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: rf %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 
 			err = ge->errorMessage;
 			if( err )
@@ -1150,31 +1148,25 @@ void SV_Frame( int msec ) {
 	}
 
 	// check timeouts
-	if (sv.state == SS_GAME) { static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: fr %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 	SV_CheckTimeouts();
 
 	// send messages back to the clients
-	if (sv.state == SS_GAME) { static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: fr %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 	SV_SendClientMessages();
 
 	// send a heartbeat to the master if needed
-	if (sv.state == SS_GAME) { static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: fr %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 #ifndef NXDK
 	SV_MasterHeartbeat();
 #endif
 
 	// process all gamespy queries
-	if (sv.state == SS_GAME) { static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: fr %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 #ifndef NXDK
 	SV_ProcessGamespyQueries();
 #endif
 
 	// Added in OPM
 	//  Handle non-pvs sounds
-	if (sv.state == SS_GAME) { static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: fr %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 	SV_HandleNonPVSSound();
 
-	if (sv.state == SS_GAME) { static int lg_n = 0; if (lg_n++ < 3) Com_Printf("LG: fr %d t=%d\n", __LINE__, Sys_Milliseconds()); }
 	svs.lastTime = svs.time;
 }
 

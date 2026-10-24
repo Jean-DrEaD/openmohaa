@@ -544,7 +544,6 @@ CLASS_DECLARATION(Entity, World, "worldspawn") {
 
 World::World()
 {
-    gi.Printf("LG: w ctor t=%d\n", gi.Milliseconds());
     world       = this;
     world_dying = qfalse;
 
@@ -555,7 +554,6 @@ World::World()
 
     assert(entnum == ENTITYNUM_WORLD);
 
-    gi.Printf("LG: w move t=%d\n", gi.Milliseconds());
     setMoveType(MOVETYPE_NONE);
     setSolidType(SOLID_BSP);
 
@@ -563,11 +561,9 @@ World::World()
     edict->s.modelindex = 1;
     model               = "*0";
 
-    gi.Printf("LG: w cfgstr t=%d\n", gi.Milliseconds());
     UpdateConfigStrings();
 
     // clear out the soundtrack from the last level
-    gi.Printf("LG: w soundtrack t=%d\n", gi.Milliseconds());
     ChangeSoundtrack("");
 
     // set the default gravity
@@ -596,12 +592,10 @@ World::World()
     animated_farplane_color_start_z = 8192.0;
     animated_farplane_color_end_z   = 0.0;
 
-    gi.Printf("LG: w fog t=%d\n", gi.Milliseconds());
     UpdateFog();
 
     sky_alpha  = 1.0f;
     sky_portal = qtrue;
-    gi.Printf("LG: w sky t=%d\n", gi.Milliseconds());
     UpdateSky();
 
     m_fAIVisionDistance = 2048.0f;
@@ -617,7 +611,6 @@ World::World()
     level.nextmap    = "";
     level.level_name = level.mapname;
 
-    gi.Printf("LG: w soundman t=%d\n", gi.Milliseconds());
 #ifndef NXDK // LG16h: SoundMan.Load trava no Xbox
     SoundMan.Load();
 #endif
@@ -631,15 +624,12 @@ World::World()
     //
     // set the targetname of the world
     //
-    gi.Printf("LG: w target t=%d\n", gi.Milliseconds());
     SetTargetName("world");
 
     m_fNorth = 0;
 
-    gi.Printf("LG: w bounds t=%d\n", gi.Milliseconds());
     gi.ModelBoundsFromName(model.c_str(), bounds[0], bounds[1]);
     radius = (bounds[1] - bounds[0]).length() * 0.5;
-    gi.Printf("LG: w fim t=%d\n", gi.Milliseconds());
 }
 
 World::~World()
