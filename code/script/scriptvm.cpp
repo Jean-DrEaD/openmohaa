@@ -598,6 +598,13 @@ void ScriptVM::transferVarsToEvent(Event& ev, ScriptVariable *fromVar, op_parmNu
     ev.CopyValues(fromVar, count);
 }
 
+#ifdef NXDK // LG17k: comando em listener NULL vira aviso (sem runtime EH)
+extern "C" void debugPrint(const char *format, ...);
+static int lg_nl = 0;
+#define LG_NUL_THROW(n) do { if (lg_nl++ < 5) debugPrint("LG: nul %s\n", str(n).c_str()); return; } while (0)
+#else
+#define LG_NUL_THROW(n) throw ScriptException("command '%s' applied to NULL listener", n)
+#endif
 void ScriptVM::checkValidEvent(Event& ev, Listener *listener)
 {
     ClassDef *c = listener->classinfo();
@@ -720,7 +727,7 @@ void ScriptVM::execCmdMethodCommon(op_parmNum_t param)
         // avoid useless allocations of const array
         Listener *const listener = a.listenerValue();
         if (!listener) {
-            throw ScriptException("command '%s' applied to NULL listener", Event::GetEventName(eventNum));
+            LG_NUL_THROW(Event::GetEventName(eventNum));
         }
 
         executeCommand<true>(listener, param, eventNum);
@@ -739,7 +746,7 @@ void ScriptVM::execMethodCommon(op_parmNum_t param)
     Listener *const listener = a.listenerValue();
     if (!listener) {
         m_VMStack.GetTop().Clear();
-        throw ScriptException("command '%s' applied to NULL listener", Event::GetEventName(eventNum));
+        LG_NUL_THROW(Event::GetEventName(eventNum));
     }
 
     executeCommand<true, true>(listener, param, eventNum);
