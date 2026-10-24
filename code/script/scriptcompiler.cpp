@@ -1148,6 +1148,9 @@ __emit:
     case ENUM_cmd_event_expr:
         {
             const int      eventnum       = Event::FindReturnEventNum(val.node[1].stringValue);
+#ifdef NXDK
+            if (!eventnum) { static int lg_n; if (lg_n++ < 40) debugPrint("LG: cmd?e %s\n", val.node[1].stringValue); EmitOpcode(OP_STORE_NIL, val.node[3].sourcePosValue); break; }
+#endif
             sval_t         parameter_list = val.node[2];
             const uint32_t iParamCount    = EmitParameterList(parameter_list);
 
@@ -1191,6 +1194,9 @@ __emit:
     case ENUM_method_event_expr:
         {
             const int      eventnum       = Event::FindReturnEventNum(val.node[2].stringValue);
+#ifdef NXDK
+            if (!eventnum) { static int lg_n; if (lg_n++ < 40) debugPrint("LG: cmd?e %s\n", val.node[2].stringValue); EmitOpcode(OP_STORE_NIL, val.node[4].sourcePosValue); break; }
+#endif
             sval_t         parameter_list = val.node[3];
             const uint32_t iParamCount    = EmitParameterList(parameter_list);
 
