@@ -68,6 +68,7 @@ ScriptException::ScriptException(char *text)
     CreateException(text);
 }
 
+#ifndef NXDK /* LG 16z9e: G_Error do game fica em g_main.cpp */
 void Error(const char *format, ...)
 {
     va_list va;
@@ -79,3 +80,4 @@ void Error(const char *format, ...)
 
     throw ScriptException((const char *)data);
 }
+#endif
