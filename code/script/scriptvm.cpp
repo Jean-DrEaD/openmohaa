@@ -610,6 +610,9 @@ void ScriptVM::checkValidEvent(Event& ev, Listener *listener)
     ClassDef *c = listener->classinfo();
 
     if (!c->GetDef(&ev)) {
+#ifdef NXDK // LG17l: evento ausente na classe vira aviso + skip
+        { static int lg_cv = 0; if (lg_cv++ < 5) debugPrint("LG: cev %s %s\n", str(ev.getName()).c_str(), c->classname); return; }
+#endif
         if (listener == m_Thread) {
             ScriptError("Failed execution of command '%s'", ev.getName());
         } else if (listener->isSubclassOf(SimpleEntity)) {
