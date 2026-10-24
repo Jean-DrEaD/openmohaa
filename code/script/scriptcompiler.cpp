@@ -22,6 +22,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // compiler.cpp : Parse, then compile to op-codes.
 
+#ifdef NXDK
+#include <hal/debug.h>
+#endif
 #include "scriptcompiler.h"
 #include "scriptvm.h"
 #include "../fgame/level.h"
@@ -1119,6 +1122,9 @@ __emit:
     case ENUM_cmd_event_statement:
         {
             const int      eventnum       = Event::FindNormalEventNum(val.node[1].stringValue);
+#ifdef NXDK
+            if (!eventnum) { static int lg_n; if (lg_n++ < 40) debugPrint("LG: cmd? %s\n", val.node[1].stringValue); break; }
+#endif
             sval_t         parameter_list = val.node[2];
             const uint32_t iParamCount    = EmitParameterList(parameter_list);
 
@@ -1157,6 +1163,9 @@ __emit:
     case ENUM_method_event_statement:
         {
             const int      eventnum       = Event::FindNormalEventNum(val.node[2].stringValue);
+#ifdef NXDK
+            if (!eventnum) { static int lg_n; if (lg_n++ < 40) debugPrint("LG: cmd? %s\n", val.node[2].stringValue); break; }
+#endif
             sval_t         parameter_list = val.node[3];
             const uint32_t iParamCount    = EmitParameterList(parameter_list);
 
