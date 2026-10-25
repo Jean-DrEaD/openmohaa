@@ -1,3 +1,8 @@
+# LG18f: sem launcher no nxdk
+if(NXDK)
+    return()
+endif()
+
 set(LAUNCHER_SOURCES "${SOURCE_DIR}/Launcher/launch_main.cpp")
 
 if (WIN32)

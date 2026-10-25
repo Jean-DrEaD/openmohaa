@@ -37,11 +37,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #ifndef DEDICATED
 #ifdef USE_INTERNAL_SDL_HEADERS
+#ifndef NXDK /* LG18f */
 #	include "SDL.h"
+#endif
+#ifndef NXDK /* LG18f */
 #	include "SDL_cpuinfo.h"
+#endif
 #else
+#ifndef NXDK /* LG18f */
 #	include <SDL.h>
+#endif
+#ifndef NXDK /* LG18f */
 #	include <SDL_cpuinfo.h>
+#endif
 #endif
 #endif
 

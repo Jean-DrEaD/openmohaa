@@ -29,9 +29,13 @@ extern "C" {
 
 #ifndef DEDICATED
 #ifdef USE_INTERNAL_SDL_HEADERS
+#ifndef NXDK /* LG18f */
 #	include "SDL_version.h"
+#endif
 #else
+#ifndef NXDK /* LG18f */
 #	include <SDL_version.h>
+#endif
 #endif
 
 // Require a minimum version of SDL

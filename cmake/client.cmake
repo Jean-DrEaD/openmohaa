@@ -70,7 +70,10 @@ if(NXDK)
     list(REMOVE_ITEM CLIENT_SOURCES
         ${SOURCE_DIR}/sdl/sdl_input.c
         ${SOURCE_DIR}/sdl/sdl_mouse.c
-        ${SOURCE_DIR}/gamespy/cl_gamespy.c)
+        ${SOURCE_DIR}/gamespy/cl_gamespy.c
+        # LG18f
+        ${SOURCE_DIR}/client/libmumblelink.c
+        ${SOURCE_DIR}/client/qal.c)
 endif()
 
 file(GLOB_RECURSE UI_SOURCES "${SOURCE_DIR}/uilib/*.c" "${SOURCE_DIR}/uilib/*.cpp")

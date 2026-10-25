@@ -36,11 +36,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #	endif
 #else
 #	ifdef USE_INTERNAL_SDL_HEADERS
+#ifndef NXDK /* LG18f */
 #		include "SDL.h"
+#endif
+#ifndef NXDK /* LG18f */
 #		include "SDL_loadso.h"
+#endif
 #	else
+#ifndef NXDK /* LG18f */
 #		include <SDL.h>
+#endif
+#ifndef NXDK /* LG18f */
 #		include <SDL_loadso.h>
+#endif
 #	endif
 #	define Sys_LoadLibrary(f) SDL_LoadObject(f)
 #	define Sys_UnloadLibrary(h) SDL_UnloadObject(h)
