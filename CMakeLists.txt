@@ -107,3 +107,8 @@ endif()
 if(TARGET game)
   target_compile_options(game PRIVATE "-include${CMAKE_SOURCE_DIR}/tools/nxdk-shims/lg_game_rename.h")
 endif()
+
+# LG18h: game linkado estatico no cliente nxdk
+if(NXDK AND TARGET openmohaa AND TARGET game)
+    target_link_libraries(openmohaa PRIVATE game)
+endif()

@@ -173,3 +173,9 @@ if(NXDK)
         PROPERTIES COMPILE_DEFINITIONS DEDICATED)
     target_include_directories(${CLIENT_BINARY} PRIVATE ${SOURCE_DIR}/thirdparty/openal-soft-1.24.3/include/AL)
 endif()
+
+# LG18h: stubs de link + OpenAL sem dllimport
+if(NXDK)
+    target_sources(${CLIENT_BINARY} PRIVATE ${SOURCE_DIR}/renderernull/lg_client_stubs.c)
+    target_compile_definitions(${CLIENT_BINARY} PRIVATE AL_LIBTYPE_STATIC)
+endif()
