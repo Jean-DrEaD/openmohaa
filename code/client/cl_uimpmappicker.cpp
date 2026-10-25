@@ -123,12 +123,12 @@ void MpMapPickerClass::GotoParentDirectory(void)
     }
 
     for (i = currentDirectory.length() - 2; i > 0; i--) {
-        if (currentDirectory[i] == '/') {
+        if (currentDirectory[(int)i] == '/') {
             break;
         }
     }
 
-    if (currentDirectory[i] == '/') {
+    if (currentDirectory[(int)i] == '/') {
         i++;
     }
 

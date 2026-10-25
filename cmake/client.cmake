@@ -159,3 +159,17 @@ if (MSVC)
 	target_link_options(${CLIENT_BINARY} PRIVATE "/MANIFEST:NO")
 	INSTALL(FILES $<TARGET_PDB_FILE:${CLIENT_BINARY}> DESTINATION ${INSTALL_BINDIR_FULL} OPTIONAL)
 endif()
+
+# LG18g: sys/* sem SDL (mesmo modo do dedicado)
+if(NXDK)
+    set_source_files_properties(
+        ${SOURCE_DIR}/sys/sys_main.c
+        ${SOURCE_DIR}/sys/new/sys_main_new.c
+        ${SOURCE_DIR}/sys/sys_curl.c
+        ${SOURCE_DIR}/sys/con_log.c
+        ${SOURCE_DIR}/sys/sys_autoupdater.c
+        ${SOURCE_DIR}/sys/sys_win32.c
+        ${SOURCE_DIR}/sys/new/sys_win32_new.c
+        PROPERTIES COMPILE_DEFINITIONS DEDICATED)
+    target_include_directories(${CLIENT_BINARY} PRIVATE ${SOURCE_DIR}/thirdparty/openal-soft-1.24.3/include/AL)
+endif()

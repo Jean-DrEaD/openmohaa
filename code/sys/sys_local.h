@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 extern "C" {
 #endif
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(NXDK) /* LG18g */
 #ifdef USE_INTERNAL_SDL_HEADERS
 #ifndef NXDK /* LG18f */
 #	include "SDL_version.h"
