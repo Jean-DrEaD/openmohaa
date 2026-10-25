@@ -3,6 +3,16 @@
 #include "../renderercommon/tr_public.h"
 #include <string.h>
 
+/* LG 18m: fonte dummy nao-NULL (UI faz ERR_DROP se LoadFont retorna NULL) */
+static fontheader_t lg_null_fonts[16];
+static int lg_null_nfonts = 0;
+static fontheader_t *lg_null_LoadFont(const char *name) {
+    int i;
+    for (i = 0; i < lg_null_nfonts; i++) { if (!Q_stricmp(lg_null_fonts[i].name, name)) return &lg_null_fonts[i]; }
+    if (lg_null_nfonts >= 16) return &lg_null_fonts[0];
+    Q_strncpyz(lg_null_fonts[lg_null_nfonts].name, name, sizeof(lg_null_fonts[0].name));
+    return &lg_null_fonts[lg_null_nfonts++];
+}
 static refexport_t lgNullRe;
 static refimport_t lgNullRi;
 
@@ -63,6 +73,7 @@ LG_SET(GetShaderWidth, LG_NullOne);
 LG_SET(GetShaderHeight, LG_NullOne);
 
 lgNullRi.Printf(PRINT_ALL, "LG: renderer nulo (18e)\n");
+lgNullRe.LoadFont = lg_null_LoadFont; /* LG 18m */
 return &lgNullRe;
 }
 
