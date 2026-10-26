@@ -1726,7 +1726,7 @@ void Com_Init( char *commandLine ) {
 	Com_Printf( "%s %s %s %s\n", PRODUCT_NAME, PRODUCT_VERSION_FULL, PLATFORM_STRING, PRODUCT_VERSION_DATE );
 
 	if ( setjmp (abortframe) ) {
-		Sys_Error("Error during initialization");
+		Sys_Error("Error during initialization: %s", com_errorMessage);
 	}
 
 	// Clear queues
