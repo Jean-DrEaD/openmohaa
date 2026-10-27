@@ -6,11 +6,22 @@
 /* LG 18m: fonte dummy nao-NULL (UI faz ERR_DROP se LoadFont retorna NULL) */
 static fontheader_t lg_null_fonts[16];
 static int lg_null_nfonts = 0;
+static fontheader_sgl_t lg_null_sgl[16]; /* LG 18v */
 static fontheader_t *lg_null_LoadFont(const char *name) {
     int i;
     for (i = 0; i < lg_null_nfonts; i++) { if (!Q_stricmp(lg_null_fonts[i].name, name)) return &lg_null_fonts[i]; }
     if (lg_null_nfonts >= 16) return &lg_null_fonts[0];
     Q_strncpyz(lg_null_fonts[lg_null_nfonts].name, name, sizeof(lg_null_fonts[0].name));
+    { /* LG 18v */
+        fontheader_t *f = &lg_null_fonts[lg_null_nfonts];
+        fontheader_sgl_t *s = &lg_null_sgl[lg_null_nfonts];
+        int c;
+        memset(s, 0, sizeof(*s));
+        for (c = 0; c < 256; c++) { s->indirection[c] = c; s->locations[c].size[0] = 8.0f / 256.0f; }
+        s->height = 16.0f; s->aspectRatio = 1.0f;
+        Q_strncpyz(s->name, name, sizeof(s->name));
+        f->numPages = 0; f->sgl[0] = s;
+    }
     return &lg_null_fonts[lg_null_nfonts++];
 }
 static refexport_t lgNullRe;
