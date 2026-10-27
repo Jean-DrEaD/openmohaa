@@ -135,6 +135,9 @@ Expression::Expression(Script& script, State& state)
 
         condition.condition_index = state.addCondition(&token[start], script);
         if (!condition.condition_index) {
+#ifdef NXDK
+            { static int lg_n = 0; if (lg_n++ < 5) { gi.Printf("LG: st? %s\n", &token[start]); } } /* LG 18z2 */
+#else
             gi.Error(
                 ERR_DROP,
                 "%s: Unknown condition '%s' on line %d.\n",
@@ -142,6 +145,7 @@ Expression::Expression(Script& script, State& state)
                 &token[start],
                 script.GetLineNumber()
             );
+#endif
         }
 
         conditions.AddObject(condition);
@@ -156,6 +160,9 @@ bool Expression::getResult(State& state, Entity& ent, Container<Conditional *> *
 
     for (i = 1; i <= conditions.NumObjects(); i++) {
         cond        = &conditions.ObjectAt(i);
+#ifdef NXDK
+        if (!cond->condition_index) { return false; } /* LG 18z2: condicao desconhecida = falsa */
+#endif
         conditional = sent_conditionals->ObjectAt(cond->condition_index);
 
         if (!conditional || !conditional->getResult(cond->test, ent)) {
