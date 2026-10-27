@@ -3559,6 +3559,7 @@ void UI_LoadMenu(const char *name)
 
     new UILayout(buffer);
     uWinMan.CreateMenus();
+    Com_Printf("LG: ui 4 menus ok t=%d\n", Sys_Milliseconds()); /* LG 18r */
     UI_FocusMenuIfExists();
 }
 
@@ -3934,6 +3935,7 @@ void UI_ResolutionChange(void)
         delete scoreboardlist;
         scoreboardlist = NULL;
         UI_CreateScoreboard();
+        Com_Printf("LG: ui 1 scoreboard ok t=%d\n", Sys_Milliseconds()); /* LG 18r */
     }
 
     uie.ResolutionChange();
@@ -5391,6 +5393,7 @@ void CL_InitializeUI(void)
     view3d->InitFrame(NULL, 0, 0, uid.vidWidth, uid.vidHeight, -1, "facfont-20");
     view3d->setName("view3d");
     view3d->InitSubtitle();
+    Com_Printf("LG: ui 2 view3d ok t=%d\n", Sys_Milliseconds()); /* LG 18r */
 
     memset(&intro_stage, 0, sizeof(intro_stage));
 
@@ -5435,6 +5438,7 @@ void CL_InitializeUI(void)
 
     // Load all urc files
     filenames = FS_ListFiles("ui/", "urc", qfalse, &nfiles);
+    Com_Printf("LG: ui 3 urc n=%d t=%d\n", nfiles, Sys_Milliseconds()); /* LG 18r */
 
     for (i = 0; i < nfiles; i++) {
         char szFilename[MAX_QPATH];
@@ -5488,6 +5492,7 @@ void CL_InitializeUI(void)
     CL_ClearButtons();
 
     cls.uiStarted = qtrue;
+    Com_Printf("LG: ui 5 intro? t=%d\n", Sys_Milliseconds()); /* LG 18r */
 
     if (!com_dedicated->integer) {
         CL_TryStartIntro();
