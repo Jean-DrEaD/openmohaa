@@ -4160,7 +4160,12 @@ UI_LoadInventory_f
 void UI_LoadInventory_f(void)
 {
     UI_CloseInventory();
+#ifdef NXDK /* LG 18p */
+    if (FS_ReadFile(ui_inventoryfile->string, NULL) > 0) CL_LoadInventory(ui_inventoryfile->string, &client_inv);
+    else Com_Printf("LG: sem %s (inventario vazio)\n", ui_inventoryfile->string);
+#else
     CL_LoadInventory(ui_inventoryfile->string, &client_inv);
+#endif
 }
 
 /*
