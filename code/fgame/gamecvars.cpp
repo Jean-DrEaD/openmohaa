@@ -446,7 +446,11 @@ void CVAR_Init(void)
     g_spiffyvelocity_z = gi.Cvar_Get("g_spiffyvelocity_z", "0", 0);
 
     g_playermodel = gi.Cvar_Get("g_playermodel", "american_army", CVAR_SAVEGAME);
+#ifdef NXDK
+    g_statefile   = gi.Cvar_Get("g_statefile", "global/alice", 0); /* LG 18y: alice_legs/torso.st */
+#else
     g_statefile   = gi.Cvar_Get("g_statefile", "global/mike", 0);
+#endif
 
     g_showautoaim  = gi.Cvar_Get("g_showautoaim", "0", 0);
     g_debugtargets = gi.Cvar_Get("g_debugtargets", "0", 0);
