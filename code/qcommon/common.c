@@ -2240,7 +2240,7 @@ Com_Frame
 void Com_Frame( void ) {
 #ifdef NXDK /* LG 15x heartbeat */
 	{ static int lg_fc = 0, lg_t = 0; int lg_n = Sys_Milliseconds(); lg_fc++; if (lg_fc == 40) { Com_Printf("LG: auto map centipede1\n"); Cbuf_AddText("map centipede1\n"); } if (lg_fc == 1 || lg_n - lg_t >= 2000) { lg_t = lg_n; Com_Printf("LG: frame %d t=%d\n", lg_fc, lg_n); } }
-	Com_Printf("LG: ded=%d cl=%d\n", com_dedicated ? com_dedicated->integer : -1, com_cl_running ? com_cl_running->integer : -1);
+	{ static int lg_dn = 0; if (!lg_dn++) { Com_Printf("LG: ded=%d cl=%d\n", com_dedicated ? com_dedicated->integer : -1, com_cl_running ? com_cl_running->integer : -1); } } /* LG 18w */
 #endif
 
 	int		msec, minMsec;
