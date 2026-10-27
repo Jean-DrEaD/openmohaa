@@ -669,7 +669,11 @@ State::State(const char *statename, Script& script, StateMap& map)
             readCamera(script);
         } else if (!cmd.icmp("legs")) {
             readLegs(script);
+#ifdef NXDK
+        } else if ((!cmd.icmp("action") || !cmd.icmp("torso"))) { /* LG 18z3: torso FAKK = action */
+#else
         } else if (!cmd.icmp("action")) {
+#endif
             readAction(script);
         } else if (!cmd.icmp("behavior")) {
             readBehavior(script);
