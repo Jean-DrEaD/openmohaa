@@ -802,10 +802,14 @@ void View3D::InitSubtitle(void)
         subLife[i]  = 4000.0;
     }
 
+#ifdef NXDK
+    totalWidth = 260.0; /* LG 18u */
+#else
     totalWidth = 0.0;
     for (char j = 'A'; j <= 'Z'; j++) {
         totalWidth += m_font->getCharWidth(j);
     }
+#endif
 
     avWidth = totalWidth / 26.0;
 }
