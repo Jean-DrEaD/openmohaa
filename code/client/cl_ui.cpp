@@ -3559,7 +3559,6 @@ void UI_LoadMenu(const char *name)
 
     new UILayout(buffer);
     uWinMan.CreateMenus();
-    Com_Printf("LG: ui 4 menus ok t=%d\n", Sys_Milliseconds()); /* LG 18r */
     UI_FocusMenuIfExists();
 }
 
@@ -3935,7 +3934,6 @@ void UI_ResolutionChange(void)
         delete scoreboardlist;
         scoreboardlist = NULL;
         UI_CreateScoreboard();
-        Com_Printf("LG: ui 1 scoreboard ok t=%d\n", Sys_Milliseconds()); /* LG 18r */
     }
 
     uie.ResolutionChange();
@@ -5316,10 +5314,12 @@ void CL_InitializeUI(void)
 
     UI_LoadInventory_f();
     UI_CreateScoreboard();
+    Com_Printf("LG: ui 1 scoreboard ok t=%d\n", Sys_Milliseconds()); /* LG 18s */
 
     // New since mohta
     // Version number
     Cvar_Set("game_version", va("v%s", com_target_shortversion->string));
+    Com_Printf("LG: ui 1b version ok t=%d\n", Sys_Milliseconds()); /* LG 18s */
 
     // Add all commands
     Cmd_AddCommand("pushmenu", UI_PushMenu_f);
@@ -5369,6 +5369,7 @@ void CL_InitializeUI(void)
     Cmd_AddCommand("gotoreturnmenu", UI_PushReturnMenu_f);
     Cmd_AddCommand("salesscreen", UI_SalesScreen_f);
     Cmd_AddCommand("launchgamespy", UI_LaunchGameSpy_f);
+    Com_Printf("LG: ui 1c cmds ok dev=%d t=%d\n", developer->integer, Sys_Milliseconds()); /* LG 18s */
 
     if (developer->integer) {
         UColor bgColor;
@@ -5450,6 +5451,7 @@ void CL_InitializeUI(void)
     FS_FreeFileList(filenames);
 
     uWinMan.CreateMenus();
+    Com_Printf("LG: ui 4 menus ok t=%d\n", Sys_Milliseconds()); /* LG 18s */
 
     // find the crosshair
     // Removed in 2.0
