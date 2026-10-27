@@ -5390,9 +5390,13 @@ void CL_InitializeUI(void)
 
     // Create the 3D view
     view3d = new View3D;
+    Com_Printf("LG: v3 new ok t=%d\n", Sys_Milliseconds()); /* LG 18t */
     view3d->setAlwaysOnBottom(true);
+    Com_Printf("LG: v3 bottom ok t=%d\n", Sys_Milliseconds()); /* LG 18t */
     view3d->InitFrame(NULL, 0, 0, uid.vidWidth, uid.vidHeight, -1, "facfont-20");
+    Com_Printf("LG: v3 initframe ok t=%d\n", Sys_Milliseconds()); /* LG 18t */
     view3d->setName("view3d");
+    Com_Printf("LG: v3 name ok t=%d\n", Sys_Milliseconds()); /* LG 18t */
     view3d->InitSubtitle();
     Com_Printf("LG: ui 2 view3d ok t=%d\n", Sys_Milliseconds()); /* LG 18r */
 
