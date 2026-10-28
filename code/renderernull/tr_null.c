@@ -177,10 +177,11 @@ static void LG2D_EndFrame(int *fe, int *be) {
     if (fe) *fe = 0; if (be) *be = 0;
     if (!lg2d_in) return;
     lg2d_nfill--; lg2d_ndraw--; lg2d_fill((float)(lg2d_frame % (unsigned int)(lg2d_w - 40)), (float)(lg2d_h - 12), 40.0f, 10.0f, 0xFF00FF00);
+    if (lgx_st > 0) { int k; for (k = 0; k < lg2d_nsh; k++) if (lg_tex[k]) { static const uint8_t wc[4] = { 255, 255, 255, 255 }; if (lgx_quad(lg_tex[k] - 1, 200.0f, 150.0f, 128.0f, 128.0f, 0.0f, 0.0f, 1.0f, 1.0f, wc)) lg2d_nq++; break; } } /* LG 18z8m-e quad forcado */
     pb_erase_text_screen();
     lg2d_fpsf++; if (GetTickCount() - lg2d_fpst >= 1000) { lg2d_fps = lg2d_fpsf; lg2d_fpsf = 0; lg2d_fpst = GetTickCount(); }
     lg2d_dbgblit((int)lg2d_nsh); /* LG 18z8k */
-    pb_printat(0, 0, "LG 18z8m frame %u fps %u", lg2d_frame, lg2d_fps);
+    pb_printat(0, 0, "LG 18z8m-e frame %u fps %u", lg2d_frame, lg2d_fps);
     pb_printat(1, 0, "fill %u draw %u alpha %u sh0 %u", lg2d_nfill, lg2d_ndraw, lg2d_nalpha, lg2d_nsh0);
     pb_printat(2, 0, "setcolor %u shaders %u q %u up %u x%d", lg2d_ncol, (unsigned int)lg2d_nsh, lg2d_nq, lg_nup, lgx_st); lg2d_nq = 0; pb_printat(4, 0, "tga ok %u fail %u dec %u t%d %dx%d b%d", lg_tga_ok, lg_tga_fail, lg_ndec, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); if (0) pb_printat(4, 0, "%u", lg_tga_ok, lg_tga_fail, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); { int i0 = lg2d_nsh > 18 ? lg2d_nsh - 18 : 0, r; for (r = 0; i0 + r < lg2d_nsh; r++) pb_printat(5 + r, 0, "%c %-34.34s", lg_sh_st[i0 + r], lg2d_shn[i0 + r]); }
     pb_printat(3, 0, "vbl %u fin %u game %u to %u", (unsigned int)lg2d_msvbl, (unsigned int)lg2d_msfin, (unsigned int)lg2d_msgame, lg2d_nto);
