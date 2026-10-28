@@ -42,28 +42,40 @@ static DWORD lg2d_msvbl = 0, lg2d_msfin = 0, lg2d_msgame = 0, lg2d_tend = 0; sta
 static unsigned int lg2d_nfill = 0, lg2d_ndraw = 0, lg2d_nalpha = 0, lg2d_nsh0 = 0, lg2d_ncol = 0;
 static unsigned int lg2d_fps = 0, lg2d_fpsf = 0; static DWORD lg2d_fpst = 0;
 static char lg2d_shn[512][64]; static int lg2d_nsh = 0;
-/* LG 18z8i: probe TGA (CPU) no registro de shader */
+/* LG 18z8j: probe TGA/JPG (CPU) no registro de shader */
 static refimport_t lg_ri; static int lg_ri_ok = 0;
 static unsigned int lg_tga_ok = 0, lg_tga_fail = 0;
 static char lg_tga_last[48] = "-"; static int lg_tga_w = 0, lg_tga_h = 0, lg_tga_t = 0, lg_tga_bpp = 0;
-static void lg2d_probe(const char *name) {
-    char fn[80]; void *buf = 0; long len; const unsigned char *b; size_t n;
-    if (!lg_ri_ok || !lg_ri.FS_ReadFile || !name) return;
-    Q_strncpyz(fn, name, sizeof(fn)); n = strlen(fn);
-    if (n < 4 || fn[n - 4] != '.') Q_strcat(fn, sizeof(fn), ".tga");
-    Q_strncpyz(lg_tga_last, fn, sizeof(lg_tga_last));
-    len = (long)lg_ri.FS_ReadFile(fn, &buf);
-    if (len < 18 || !buf) { lg_tga_fail++; lg_tga_w = lg_tga_h = -1; if (buf) lg_ri.FS_FreeFile(buf); return; }
-    b = (const unsigned char *)buf; lg_tga_ok++;
-    lg_tga_t = b[2]; lg_tga_w = b[12] | (b[13] << 8); lg_tga_h = b[14] | (b[15] << 8); lg_tga_bpp = b[16];
-    lg_ri.FS_FreeFile(buf);
+static char lg_sh_st[512];
+static long lg2d_try(const char *base, const char *ext, void **buf) {
+    char fn[80];
+    Q_strncpyz(fn, base, sizeof(fn)); Q_strcat(fn, sizeof(fn), ext);
+    *buf = 0; return (long)lg_ri.FS_ReadFile(fn, buf);
+}
+static char lg2d_probe(const char *name) {
+    char base[80]; void *buf = 0; long len; const unsigned char *b; size_t n;
+    if (!lg_ri_ok || !lg_ri.FS_ReadFile || !name) return '?';
+    Q_strncpyz(base, name, sizeof(base)); n = strlen(base);
+    if (n >= 4 && base[n - 4] == '.') base[n - 4] = 0;
+    Q_strncpyz(lg_tga_last, name, sizeof(lg_tga_last));
+    len = lg2d_try(base, ".tga", &buf);
+    if (len >= 18 && buf) {
+        b = (const unsigned char *)buf; lg_tga_ok++;
+        lg_tga_t = b[2]; lg_tga_w = b[12] | (b[13] << 8); lg_tga_h = b[14] | (b[15] << 8); lg_tga_bpp = b[16];
+        lg_ri.FS_FreeFile(buf); return 'T';
+    }
+    if (buf) lg_ri.FS_FreeFile(buf);
+    len = lg2d_try(base, ".jpg", &buf);
+    if (len > 0 && buf) { lg_tga_ok++; lg_ri.FS_FreeFile(buf); return 'J'; }
+    if (buf) lg_ri.FS_FreeFile(buf);
+    lg_tga_fail++; return '-';
 }
 static qhandle_t LG2D_RegisterShader(const char *name) {
     int i;
     if (!name || !name[0]) return 0;
     for (i = 0; i < lg2d_nsh; i++) if (!Q_stricmp(lg2d_shn[i], name)) return (qhandle_t)(i + 1);
     if (lg2d_nsh >= 512) return 1;
-    Q_strncpyz(lg2d_shn[lg2d_nsh], name, 64); lg2d_probe(name);
+    Q_strncpyz(lg2d_shn[lg2d_nsh], name, 64); lg_sh_st[lg2d_nsh] = lg2d_probe(name);
     return (qhandle_t)(++lg2d_nsh);
 }
 static void lg2d_init(void) {
@@ -127,9 +139,9 @@ static void LG2D_EndFrame(int *fe, int *be) {
     lg2d_nfill--; lg2d_ndraw--; lg2d_fill((float)(lg2d_frame % (unsigned int)(lg2d_w - 40)), (float)(lg2d_h - 12), 40.0f, 10.0f, 0xFF00FF00);
     pb_erase_text_screen();
     lg2d_fpsf++; if (GetTickCount() - lg2d_fpst >= 1000) { lg2d_fps = lg2d_fpsf; lg2d_fpsf = 0; lg2d_fpst = GetTickCount(); }
-    pb_printat(0, 0, "LG 18z8i frame %u fps %u", lg2d_frame, lg2d_fps);
+    pb_printat(0, 0, "LG 18z8j frame %u fps %u", lg2d_frame, lg2d_fps);
     pb_printat(1, 0, "fill %u draw %u alpha %u sh0 %u", lg2d_nfill, lg2d_ndraw, lg2d_nalpha, lg2d_nsh0);
-    pb_printat(2, 0, "setcolor %u shaders %u", lg2d_ncol, (unsigned int)lg2d_nsh); pb_printat(4, 0, "tga ok %u fail %u t%d %dx%d b%d", lg_tga_ok, lg_tga_fail, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); pb_printat(5, 0, "%s", lg_tga_last);
+    pb_printat(2, 0, "setcolor %u shaders %u", lg2d_ncol, (unsigned int)lg2d_nsh); pb_printat(4, 0, "tga ok %u fail %u t%d %dx%d b%d", lg_tga_ok, lg_tga_fail, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); { int i0 = lg2d_nsh > 18 ? lg2d_nsh - 18 : 0, r; for (r = 0; i0 + r < lg2d_nsh; r++) pb_printat(5 + r, 0, "%c %.34s", lg_sh_st[i0 + r], lg2d_shn[i0 + r]); }
     pb_printat(3, 0, "vbl %u fin %u game %u to %u", (unsigned int)lg2d_msvbl, (unsigned int)lg2d_msfin, (unsigned int)lg2d_msgame, lg2d_nto);
     lg2d_nfill = lg2d_ndraw = lg2d_nalpha = lg2d_nsh0 = lg2d_ncol = 0;
     pb_draw_text_screen();
