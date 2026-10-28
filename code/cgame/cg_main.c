@@ -141,7 +141,11 @@ void CG_RegisterCvars(void)
     cg_hidetempmodels             = cgi.Cvar_Get("cg_hidetempmodels", "0", 0);
     cg_synchronousClients         = cgi.Cvar_Get("g_synchronousClients", "0", 0);
     cg_stereoSeparation           = cgi.Cvar_Get("cg_stereosep", "0.4", CVAR_ARCHIVE);
+#ifdef NXDK
+    cg_lagometer                  = cgi.Cvar_Get("cg_lagometer", "1", 0); /* LG 18z8n-e */
+#else
     cg_lagometer                  = cgi.Cvar_Get("cg_lagometer", "0", 0);
+#endif
     paused                        = cgi.Cvar_Get("paused", "0", 0);
     r_lerpmodels                  = cgi.Cvar_Get("r_lerpmodels", "1", 0);
     cg_3rd_person                 = cgi.Cvar_Get("cg_3rd_person", "0", CVAR_CHEAT);
@@ -167,7 +171,11 @@ void CG_RegisterCvars(void)
     cg_animationviewmodel         = cgi.Cvar_Get("cg_animationviewmodel", "0", CVAR_SYSTEMINFO);
     cg_hitmessages                = cgi.Cvar_Get("cg_hitmessages", "1", CVAR_ARCHIVE);
     cg_acidtrip                   = cgi.Cvar_Get("cg_acidtrip", "0", CVAR_CHEAT);
+#ifdef NXDK
+    cg_hud                        = cgi.Cvar_Get("cg_hud", "1", 0); /* LG 18z8n-e */
+#else
     cg_hud                        = cgi.Cvar_Get("cg_hud", "0", 0);
+#endif
     cg_huddraw_force              = cgi.Cvar_Get("cg_huddraw_force", "0", CVAR_SAVEGAME);
     cg_drawsvlag                  = cgi.Cvar_Get("cg_drawsvlag", "1", CVAR_ARCHIVE);
     cg_crosshair                  = cgi.Cvar_Get("cg_crosshair", "textures/hud/crosshair", CVAR_ARCHIVE);
