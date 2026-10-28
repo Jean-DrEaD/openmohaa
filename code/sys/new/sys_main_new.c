@@ -289,6 +289,9 @@ Sys_GetCGameAPI
 */
 void* Sys_GetCGameAPI(void* parms)
 {
+#ifdef NXDK /* NXDK_STATIC_CGAME */
+    { extern void *GetCGameAPI(void); (void)parms; return GetCGameAPI(); }
+#endif
     void* (*GetCGameAPI) (void*);
     const char* gamename = "cgame" DLL_SUFFIX DLL_EXT;
 
