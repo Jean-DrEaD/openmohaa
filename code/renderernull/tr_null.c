@@ -37,6 +37,8 @@ static unsigned int lg2d_frame = 0;
 static float lg2d_rgba[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 static refimport_t *lg2d_ri = 0;
 /* LG 18z8d: contadores por frame + tabela de shaders */
+/* LG 18z8e: tempos (ms) */
+static DWORD lg2d_msvbl = 0, lg2d_msfin = 0, lg2d_msgame = 0, lg2d_tend = 0; static unsigned int lg2d_nto = 0;
 static unsigned int lg2d_nfill = 0, lg2d_ndraw = 0, lg2d_nalpha = 0, lg2d_nsh0 = 0, lg2d_ncol = 0;
 static unsigned int lg2d_fps = 0, lg2d_fpsf = 0; static DWORD lg2d_fpst = 0;
 static char lg2d_shn[512][64]; static int lg2d_nsh = 0;
@@ -86,7 +88,7 @@ static void LG2D_BeginFrame(int stereo) {
     DWORD *fb; int i, n;
     (void)stereo;
     if (!lg2d_ok || lg2d_in) return;
-    pb_wait_for_vbl();
+    { DWORD lgv = GetTickCount(); if (lg2d_tend) lg2d_msgame = lgv - lg2d_tend; pb_wait_for_vbl(); lg2d_msvbl = GetTickCount() - lgv; }
     pb_reset();
     pb_target_back_buffer();
     fb = (DWORD *)pb_back_buffer(); n = lg2d_w * lg2d_h;
@@ -103,11 +105,12 @@ static void LG2D_EndFrame(int *fe, int *be) {
     pb_printat(0, 0, "LG 18z8d frame %u fps %u", lg2d_frame, lg2d_fps);
     pb_printat(1, 0, "fill %u draw %u alpha %u sh0 %u", lg2d_nfill, lg2d_ndraw, lg2d_nalpha, lg2d_nsh0);
     pb_printat(2, 0, "setcolor %u shaders %u", lg2d_ncol, (unsigned int)lg2d_nsh);
+    pb_printat(3, 0, "vbl %u fin %u game %u to %u", (unsigned int)lg2d_msvbl, (unsigned int)lg2d_msfin, (unsigned int)lg2d_msgame, lg2d_nto);
     lg2d_nfill = lg2d_ndraw = lg2d_nalpha = lg2d_nsh0 = lg2d_ncol = 0;
     pb_draw_text_screen();
     __asm__ __volatile__("sfence" ::: "memory");
     t = GetTickCount();
-    while (pb_finished()) { if (GetTickCount() - t > 2000) break; }
+    while (pb_finished()) { if (GetTickCount() - t > 50) { lg2d_nto++; break; } } lg2d_msfin = GetTickCount() - t; lg2d_tend = GetTickCount();
     lg2d_in = 0;
 }
 static void LG2D_DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t shader) {
