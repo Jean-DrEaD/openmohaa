@@ -29,6 +29,85 @@ static refimport_t lgNullRi;
 
 #define LG_SET(field, fn) do { void *lgp_ = (void *)(fn); memcpy(&lgNullRe.field, &lgp_, sizeof(lgp_)); } while (0)
 
+/* LG 18z8c: 2D minimo via pbkit (CPU fill no back buffer; cor por shader) */
+#ifdef NXDK
+#include <pbkit/pbkit.h>
+static int lg2d_ok = 0, lg2d_in = 0, lg2d_w = 640, lg2d_h = 480;
+static unsigned int lg2d_frame = 0;
+static float lg2d_rgba[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+static refimport_t *lg2d_ri = 0;
+static void lg2d_init(void) {
+    if (lg2d_ok) return;
+    if (pb_init() != 0) { if (lg2d_ri) lg2d_ri->Printf(PRINT_ALL, "LG: pb_init falhou\n"); return; }
+    pb_show_front_screen();
+    lg2d_w = (int)pb_back_buffer_width(); lg2d_h = (int)pb_back_buffer_height();
+    if (lg2d_w <= 0 || lg2d_h <= 0) { lg2d_w = 640; lg2d_h = 480; }
+    lg2d_ok = 1;
+}
+static float lg2d_c01(float v) { return v < 0.0f ? 0.0f : (v > 1.0f ? 1.0f : v); }
+static DWORD lg2d_mk(int shader) {
+    float r = 1.0f, g = 1.0f, b = 1.0f, a = lg2d_c01(lg2d_rgba[3]);
+    if (shader > 0) {
+        unsigned int h = (unsigned int)shader * 2654435761u;
+        r = 0.3f + (float)((h >> 8) & 0xFF) / 365.0f;
+        g = 0.3f + (float)((h >> 16) & 0xFF) / 365.0f;
+        b = 0.3f + (float)((h >> 24) & 0xFF) / 365.0f;
+    }
+    r = lg2d_c01(r * lg2d_rgba[0]); g = lg2d_c01(g * lg2d_rgba[1]); b = lg2d_c01(b * lg2d_rgba[2]);
+    return ((DWORD)(a * 255.0f) << 24) | ((DWORD)(r * 255.0f) << 16) | ((DWORD)(g * 255.0f) << 8) | (DWORD)(b * 255.0f);
+}
+static void lg2d_fill(float x, float y, float w, float h, DWORD col) {
+    int x0, y0, x1, y1, i, j; DWORD *fb;
+    if (!lg2d_in || ((col >> 24) & 0xFF) < 128) return;
+    x0 = (int)x; y0 = (int)y; x1 = (int)(x + w); y1 = (int)(y + h);
+    if (x0 < 0) x0 = 0; if (y0 < 0) y0 = 0;
+    if (x1 > lg2d_w) x1 = lg2d_w; if (y1 > lg2d_h) y1 = lg2d_h;
+    if (x0 >= x1 || y0 >= y1) return;
+    fb = (DWORD *)pb_back_buffer();
+    for (j = y0; j < y1; j++) { DWORD *row = fb + j * lg2d_w; for (i = x0; i < x1; i++) row[i] = col; }
+}
+static void LG2D_SetColor(const float *rgba) {
+    int i; for (i = 0; i < 4; i++) lg2d_rgba[i] = rgba ? rgba[i] : 1.0f;
+}
+static void LG2D_BeginFrame(int stereo) {
+    DWORD *fb; int i, n;
+    (void)stereo;
+    if (!lg2d_ok || lg2d_in) return;
+    pb_wait_for_vbl();
+    pb_reset();
+    pb_target_back_buffer();
+    fb = (DWORD *)pb_back_buffer(); n = lg2d_w * lg2d_h;
+    for (i = 0; i < n; i++) fb[i] = 0xFF101020;
+    lg2d_in = 1; lg2d_frame++;
+}
+static void LG2D_EndFrame(int *fe, int *be) {
+    DWORD t;
+    if (fe) *fe = 0; if (be) *be = 0;
+    if (!lg2d_in) return;
+    lg2d_fill((float)(lg2d_frame % (unsigned int)(lg2d_w - 40)), (float)(lg2d_h - 12), 40.0f, 10.0f, 0xFF00FF00);
+    pb_erase_text_screen();
+    pb_printat(0, 0, "LG 18z8c frame %u", lg2d_frame);
+    pb_draw_text_screen();
+    __asm__ __volatile__("sfence" ::: "memory");
+    t = GetTickCount();
+    while (pb_finished()) { if (GetTickCount() - t > 2000) break; }
+    lg2d_in = 0;
+}
+static void LG2D_DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t shader) {
+    (void)s1; (void)t1; (void)s2; (void)t2;
+    lg2d_fill(x, y, w, h, lg2d_mk((int)shader));
+}
+static void LG2D_DrawStretchPic2(float x, float y, float w, float h, float s1, float t1, float s2, float t2, float sx, float sy, qhandle_t shader) {
+    (void)s1; (void)t1; (void)s2; (void)t2; (void)sx; (void)sy;
+    lg2d_fill(x, y, w, h, lg2d_mk((int)shader));
+}
+static void LG2D_DrawTilePic(float x, float y, float w, float h, qhandle_t shader) {
+    lg2d_fill(x, y, w, h, lg2d_mk((int)shader));
+}
+static void LG2D_DrawBox(float x, float y, float w, float h) {
+    lg2d_fill(x, y, w, h, lg2d_mk(0));
+}
+#endif
 /* cdecl: o chamador limpa a pilha, entao um stub int serve p/ qualquer assinatura sem float/struct. */
 static int LG_NullStub(void) { return 0; }
 static int LG_NullOne(void) { return 1; }
@@ -82,6 +161,17 @@ LG_SET(GetGraphicsInfo, LG_NullName);
 LG_SET(SetMode, LG_NullTrue);
 LG_SET(GetShaderWidth, LG_NullOne);
 LG_SET(GetShaderHeight, LG_NullOne);
+#ifdef NXDK /* LG 18z8c */
+lg2d_ri = &lgNullRi;
+LG_SET(SetColor, LG2D_SetColor);
+LG_SET(BeginFrame, LG2D_BeginFrame);
+LG_SET(EndFrame, LG2D_EndFrame);
+LG_SET(DrawStretchPic, LG2D_DrawStretchPic);
+LG_SET(DrawStretchPic2, LG2D_DrawStretchPic2);
+LG_SET(DrawTilePic, LG2D_DrawTilePic);
+LG_SET(DrawBox, LG2D_DrawBox);
+lg2d_init();
+#endif
 
 lgNullRi.Printf(PRINT_ALL, "LG: renderer nulo (18e)\n");
 lgNullRe.LoadFont = lg_null_LoadFont; /* LG 18m */
