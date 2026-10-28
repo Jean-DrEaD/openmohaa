@@ -23,6 +23,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 #include "cl_ui.h"
+#ifdef __cplusplus
+extern "C"
+#endif
+extern int lg_dbg[8]; /* LG 18z8n-c */
 
 qboolean	scr_initialized;		// ready to draw
 stereoFrame_t	s_scr_stereoFrame;
@@ -433,6 +437,7 @@ This will be called twice if rendering in stereo mode
 ==================
 */
 void SCR_DrawScreenField( void ) {
+    lg_dbg[0] = (int)clc.state; /* LG 18z8n-c */
 	// wide aspect ratio screens need to have the sides cleared
 	// unless they are displaying game renderings
 	if ( clc.state != CA_ACTIVE && clc.state != CA_CINEMATIC ) {

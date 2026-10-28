@@ -24,6 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // Some tools used to drawing 2d stuff
 
 #include "cg_local.h"
+#ifdef __cplusplus
+extern "C"
+#endif
+extern int lg_dbg[8]; /* LG 18z8n-c */
 
 /*
 ================
@@ -1526,6 +1530,7 @@ CG_Draw2D
 */
 void CG_Draw2D(void)
 {
+    lg_dbg[3]++; /* LG 18z8n-c */
     CG_UpdateCountdown();
     CG_DrawZoomOverlay();
     CG_DrawLagometer();

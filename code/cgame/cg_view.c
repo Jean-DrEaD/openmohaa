@@ -22,6 +22,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 #include "cg_parsemsg.h"
+#ifdef __cplusplus
+extern "C"
+#endif
+extern int lg_dbg[8]; /* LG 18z8n-c */
 
 //============================================================================
 
@@ -827,6 +831,7 @@ Generates and draws a game scene and status information at the given time.
 void CG_DrawActiveFrame(int serverTime, int frameTime, stereoFrame_t stereoView, qboolean demoPlayback)
 {
     cg.time         = serverTime;
+    lg_dbg[1]++; /* LG 18z8n-c */
     cg.frametime    = frameTime;
     cg.demoPlayback = demoPlayback;
 
@@ -843,6 +848,7 @@ void CG_DrawActiveFrame(int serverTime, int frameTime, stereoFrame_t stereoView,
     // if we haven't received any snapshots yet, all
     // we can draw is the information screen
     if (!cg.snap || (cg.snap->snapFlags & SNAPFLAG_NOT_ACTIVE)) {
+    lg_dbg[2]++; /* LG 18z8n-c */
         return;
     }
 

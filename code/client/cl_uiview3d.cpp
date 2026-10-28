@@ -24,6 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/localization.h"
 
 #include "../server/server.h"
+#ifdef __cplusplus
+extern "C"
+#endif
+extern int lg_dbg[8]; /* LG 18z8n-c */
 
 CLASS_DECLARATION(UIWidget, View3D, NULL) {
     {&W_Activated,     &View3D::OnActivate  },
@@ -581,7 +585,7 @@ void View3D::Draw2D(void)
         SCR_DrawDebugGraph();
     } else if (!cls.no_menus) {
         if (cge) {
-            cge->CG_Draw2D();
+            { lg_dbg[5]++; cge->CG_Draw2D(); } /* LG 18z8n-c */
         }
 
         if (m_locationprint) {

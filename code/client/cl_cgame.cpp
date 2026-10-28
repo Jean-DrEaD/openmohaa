@@ -27,6 +27,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../corepp/tiki.h"
 #include "../qcommon/localization.h"
 #include "../qcommon/bg_compat.h"
+#ifdef __cplusplus
+extern "C"
+#endif
+extern int lg_dbg[8]; /* LG 18z8n-c */
 
 extern qboolean loadCamera(const char *name);
 extern void startCamera(int time);
@@ -1020,7 +1024,7 @@ CL_CGame2D
 =====================
 */
 void CL_CGame2D( stereoFrame_t stereo ) {
-	cge->CG_Draw2D();
+	{ lg_dbg[4]++; cge->CG_Draw2D(); } /* LG 18z8n-c */
 }
 
 
