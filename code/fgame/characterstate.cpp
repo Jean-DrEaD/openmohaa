@@ -195,6 +195,7 @@ void State::readMoveType(Script& script)
     if (*name == NULL) {
 #ifdef NXDK
         { static int lg_n = 0; if (lg_n++ < 5) { gi.Printf("LG: mv? linha %d\n", script.GetLineNumber()); } } /* LG 18z4 */
+        while (script.TokenAvailable(false)) { script.GetToken(false); } /* LG 18z5 */
 #else
         gi.Error(
             ERR_DROP,
@@ -232,6 +233,7 @@ void State::readCamera(Script& script)
     if (!setCameraType(token)) {
 #ifdef NXDK
         { static int lg_n = 0; if (lg_n++ < 5) { gi.Printf("LG: cam? linha %d\n", script.GetLineNumber()); } } /* LG 18z4 */
+        while (script.TokenAvailable(false)) { script.GetToken(false); } /* LG 18z5 */
 #else
         gi.Error(
             ERR_DROP,
@@ -696,6 +698,9 @@ State::State(const char *statename, Script& script, StateMap& map)
         } else if (!cmd.icmp("}")) {
             break;
         } else {
+#ifdef NXDK
+            { static int lg_n = 0; if (lg_n++ < 5) { gi.Printf("LG: stc? %s linha %d\n", cmd.c_str(), script.GetLineNumber()); } while (script.TokenAvailable(false)) { script.GetToken(false); } } /* LG 18z5 */
+#else
             gi.Error(
                 ERR_DROP,
                 "%s: Unknown command '%s' on line %d.\n",
@@ -703,6 +708,7 @@ State::State(const char *statename, Script& script, StateMap& map)
                 cmd.c_str(),
                 script.GetLineNumber()
             );
+#endif
         }
     }
 }
@@ -743,6 +749,9 @@ StateMap::StateMap(const char *file_name, Condition<Class> *conditions, Containe
             state = new State(statename.c_str(), script, *this);
             stateList.AddObject(state);
         } else {
+#ifdef NXDK
+            { static int lg_n = 0; if (lg_n++ < 5) { gi.Printf("LG: stc? %s linha %d\n", cmd.c_str(), script.GetLineNumber()); } while (script.TokenAvailable(false)) { script.GetToken(false); } } /* LG 18z5 */
+#else
             gi.Error(
                 ERR_DROP,
                 "%s: Unknown command '%s' on line %d.\n",
@@ -750,6 +759,7 @@ StateMap::StateMap(const char *file_name, Condition<Class> *conditions, Containe
                 cmd.c_str(),
                 script.GetLineNumber()
             );
+#endif
         }
     }
 
