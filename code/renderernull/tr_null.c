@@ -48,6 +48,10 @@ static unsigned int lg_tga_ok = 0, lg_tga_fail = 0;
 static char lg_tga_last[48] = "-"; static int lg_tga_w = 0, lg_tga_h = 0, lg_tga_t = 0, lg_tga_bpp = 0;
 static char lg_sh_st[512];
 static unsigned int *lg_img[512]; static int lg_iw[512], lg_ih[512]; static unsigned int lg_ndec = 0;
+/* LG 18z8m-d: prototipos lg_nv2a.c (incluido no fim do TU) */
+int lgx_init(void); int lgx_upload(const uint32_t *argb, int w, int h); void lgx_frame(void);
+int lgx_quad(int id, float x, float y, float w, float h, float s1, float t1, float s2, float t2, const uint8_t *rgba);
+static int lg_tex[512]; static int lgx_st = 0; static unsigned int lg2d_nq = 0, lg_nup = 0;
 static unsigned int lg2d_px(const unsigned char *p, int bp) {
     unsigned int a = (bp == 4) ? p[3] : 255;
     return (a << 24) | ((unsigned int)p[2] << 16) | ((unsigned int)p[1] << 8) | p[0];
@@ -111,6 +115,7 @@ static qhandle_t LG2D_RegisterShader(const char *name) {
     for (i = 0; i < lg2d_nsh; i++) if (!Q_stricmp(lg2d_shn[i], name)) return (qhandle_t)(i + 1);
     if (lg2d_nsh >= 512) return 1;
     Q_strncpyz(lg2d_shn[lg2d_nsh], name, 64); lg_sh_st[lg2d_nsh] = lg2d_probe(name, (int)lg2d_nsh);
+    { int k = lg2d_nsh; if (lg_img[k] && !(lg_iw[k] & (lg_iw[k] - 1)) && !(lg_ih[k] & (lg_ih[k] - 1))) { int id = lgx_upload((const uint32_t *)lg_img[k], lg_iw[k], lg_ih[k]); if (id >= 0) { lg_tex[k] = id + 1; lg_nup++; } } } /* LG 18z8m-d */
     return (qhandle_t)(++lg2d_nsh);
 }
 static void lg2d_init(void) {
@@ -119,7 +124,7 @@ static void lg2d_init(void) {
     pb_show_front_screen();
     lg2d_w = (int)pb_back_buffer_width(); lg2d_h = (int)pb_back_buffer_height();
     if (lg2d_w <= 0 || lg2d_h <= 0) { lg2d_w = 640; lg2d_h = 480; }
-    lg2d_ok = 1;
+    lg2d_ok = 1; lgx_st = lgx_init() ? 1 : -1; /* LG 18z8m-d */
 }
 static float lg2d_c01(float v) { return v < 0.0f ? 0.0f : (v > 1.0f ? 1.0f : v); }
 static DWORD lg2d_mk(int shader) {
@@ -164,7 +169,7 @@ static void LG2D_BeginFrame(int stereo) {
     pb_reset();
     pb_target_back_buffer();
     fb = 0; n = 0;
-    (void)fb; (void)i; (void)n; lg2d_gpufill(0, 0, lg2d_w, lg2d_h, 0xFF101020);
+    (void)fb; (void)i; (void)n; lg2d_gpufill(0, 0, lg2d_w, lg2d_h, 0xFF101020); if (lgx_st > 0) lgx_frame(); /* LG 18z8m-d */
     lg2d_in = 1; lg2d_frame++;
 }
 static void LG2D_EndFrame(int *fe, int *be) {
@@ -175,9 +180,9 @@ static void LG2D_EndFrame(int *fe, int *be) {
     pb_erase_text_screen();
     lg2d_fpsf++; if (GetTickCount() - lg2d_fpst >= 1000) { lg2d_fps = lg2d_fpsf; lg2d_fpsf = 0; lg2d_fpst = GetTickCount(); }
     lg2d_dbgblit((int)lg2d_nsh); /* LG 18z8k */
-    pb_printat(0, 0, "LG 18z8k frame %u fps %u", lg2d_frame, lg2d_fps);
+    pb_printat(0, 0, "LG 18z8m frame %u fps %u", lg2d_frame, lg2d_fps);
     pb_printat(1, 0, "fill %u draw %u alpha %u sh0 %u", lg2d_nfill, lg2d_ndraw, lg2d_nalpha, lg2d_nsh0);
-    pb_printat(2, 0, "setcolor %u shaders %u", lg2d_ncol, (unsigned int)lg2d_nsh); pb_printat(4, 0, "tga ok %u fail %u dec %u t%d %dx%d b%d", lg_tga_ok, lg_tga_fail, lg_ndec, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); if (0) pb_printat(4, 0, "%u", lg_tga_ok, lg_tga_fail, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); { int i0 = lg2d_nsh > 18 ? lg2d_nsh - 18 : 0, r; for (r = 0; i0 + r < lg2d_nsh; r++) pb_printat(5 + r, 0, "%c %-34.34s", lg_sh_st[i0 + r], lg2d_shn[i0 + r]); }
+    pb_printat(2, 0, "setcolor %u shaders %u q %u up %u x%d", lg2d_ncol, (unsigned int)lg2d_nsh, lg2d_nq, lg_nup, lgx_st); lg2d_nq = 0; pb_printat(4, 0, "tga ok %u fail %u dec %u t%d %dx%d b%d", lg_tga_ok, lg_tga_fail, lg_ndec, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); if (0) pb_printat(4, 0, "%u", lg_tga_ok, lg_tga_fail, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); { int i0 = lg2d_nsh > 18 ? lg2d_nsh - 18 : 0, r; for (r = 0; i0 + r < lg2d_nsh; r++) pb_printat(5 + r, 0, "%c %-34.34s", lg_sh_st[i0 + r], lg2d_shn[i0 + r]); }
     pb_printat(3, 0, "vbl %u fin %u game %u to %u", (unsigned int)lg2d_msvbl, (unsigned int)lg2d_msfin, (unsigned int)lg2d_msgame, lg2d_nto);
     lg2d_nfill = lg2d_ndraw = lg2d_nalpha = lg2d_nsh0 = lg2d_ncol = 0;
     pb_draw_text_screen();
@@ -187,7 +192,10 @@ static void LG2D_EndFrame(int *fe, int *be) {
     lg2d_in = 0;
 }
 static void LG2D_DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t shader) {
-    (void)s1; (void)t1; (void)s2; (void)t2;
+    if (lg2d_in && lgx_st > 0 && shader > 0 && shader <= 512 && lg_tex[shader - 1]) { /* LG 18z8m-d */
+        uint8_t c[4]; int i; for (i = 0; i < 4; i++) c[i] = (uint8_t)(lg2d_c01(lg2d_rgba[i]) * 255.0f);
+        if (lgx_quad(lg_tex[shader - 1] - 1, x, y, w, h, s1, t1, s2, t2, c)) { lg2d_nq++; return; }
+    }
     lg2d_fill(x, y, w, h, lg2d_mk((int)shader));
 }
 static void LG2D_DrawStretchPic2(float x, float y, float w, float h, float s1, float t1, float s2, float t2, float sx, float sy, qhandle_t shader) {
