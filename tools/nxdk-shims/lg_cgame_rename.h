@@ -401,4 +401,11 @@
 #define strlwc LGC_strlwc
 #define strstrip LGC_strstrip
 #define totalmemallocated LGC_totalmemallocated
+#define VoteOptions LGC_VoteOptions
+#define VoteOptionListItem LGC_VoteOptionListItem
+#define SingleVoteOption LGC_SingleVoteOption
+#define CacheResource LGC_CacheResource
+#define pmove_msec LGC_pmove_msec
+#define pmove_fixed LGC_pmove_fixed
+#define paused LGC_paused
 #endif
