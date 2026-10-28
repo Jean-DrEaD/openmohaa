@@ -193,6 +193,9 @@ void State::readMoveType(Script& script)
     }
 
     if (*name == NULL) {
+#ifdef NXDK
+        { static int lg_n = 0; if (lg_n++ < 5) { gi.Printf("LG: mv? linha %d\n", script.GetLineNumber()); } } /* LG 18z4 */
+#else
         gi.Error(
             ERR_DROP,
             "%s: Unknown movetype '%s' on line %d.\n",
@@ -200,6 +203,7 @@ void State::readMoveType(Script& script)
             token.c_str(),
             script.GetLineNumber()
         );
+#endif
     } else {
         movetype = (movecontrol_t)i;
     }
@@ -226,6 +230,9 @@ void State::readCamera(Script& script)
     token = script.GetToken(false);
 
     if (!setCameraType(token)) {
+#ifdef NXDK
+        { static int lg_n = 0; if (lg_n++ < 5) { gi.Printf("LG: cam? linha %d\n", script.GetLineNumber()); } } /* LG 18z4 */
+#else
         gi.Error(
             ERR_DROP,
             "%s: Unknown camera type '%s' on line %d.\n",
@@ -233,6 +240,7 @@ void State::readCamera(Script& script)
             token.c_str(),
             script.GetLineNumber()
         );
+#endif
     }
 }
 
