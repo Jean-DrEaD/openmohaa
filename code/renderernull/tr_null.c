@@ -279,3 +279,6 @@ qboolean R_ImageExists(const char *name)
 (void)name;
 return qfalse;
 }
+#ifdef NXDK
+#include "lg_nv2a.c"
+#endif
