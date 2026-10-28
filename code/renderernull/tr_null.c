@@ -71,6 +71,15 @@ static DWORD lg2d_mk(int shader) {
     r = lg2d_c01(r * lg2d_rgba[0]); g = lg2d_c01(g * lg2d_rgba[1]); b = lg2d_c01(b * lg2d_rgba[2]);
     return ((DWORD)(a * 255.0f) << 24) | ((DWORD)(r * 255.0f) << 16) | ((DWORD)(g * 255.0f) << 8) | (DWORD)(b * 255.0f);
 }
+/* LG 18z8g: clear por GPU (cor, retangulo) */
+extern uint32_t *pb_begin(void);
+extern void pb_end(uint32_t *pEnd);
+static void lg2d_gpufill(int x0, int y0, int x1, int y1, DWORD col) {
+    uint32_t *p = pb_begin();
+    *(p++) = (2u << 18) | (0u << 13) | 0x1D98u; *(p++) = ((uint32_t)(x1 - 1) << 16) | (uint32_t)x0; *(p++) = ((uint32_t)(y1 - 1) << 16) | (uint32_t)y0;
+    *(p++) = (3u << 18) | (0u << 13) | 0x1D8Cu; *(p++) = 0xffffff00u; *(p++) = (uint32_t)col; *(p++) = 0xF0u;
+    pb_end(p);
+}
 static void lg2d_fill(float x, float y, float w, float h, DWORD col) {
     int x0, y0, x1, y1, i, j; DWORD *fb;
     lg2d_nfill++; if (!lg2d_in) return; if (((col >> 24) & 0xFF) < 128) { lg2d_nalpha++; return; }
@@ -79,7 +88,7 @@ static void lg2d_fill(float x, float y, float w, float h, DWORD col) {
     if (x1 > lg2d_w) x1 = lg2d_w; if (y1 > lg2d_h) y1 = lg2d_h;
     if (x0 >= x1 || y0 >= y1) return;
     fb = (DWORD *)pb_back_buffer();
-    lg2d_ndraw++; for (j = y0; j < y1; j++) { DWORD *row = fb + j * lg2d_w; for (i = x0; i < x1; i++) row[i] = col; }
+    lg2d_ndraw++; (void)fb; (void)i; (void)j; lg2d_gpufill(x0, y0, x1, y1, col);
 }
 static void LG2D_SetColor(const float *rgba) {
     int i; lg2d_ncol++; for (i = 0; i < 4; i++) lg2d_rgba[i] = rgba ? rgba[i] : 1.0f;
@@ -91,8 +100,8 @@ static void LG2D_BeginFrame(int stereo) {
     { DWORD lgv = GetTickCount(); if (lg2d_tend) lg2d_msgame = lgv - lg2d_tend; pb_wait_for_vbl(); lg2d_msvbl = GetTickCount() - lgv; }
     pb_reset();
     pb_target_back_buffer();
-    fb = (DWORD *)pb_back_buffer(); n = lg2d_w * lg2d_h;
-    for (i = 0; i < n; i++) fb[i] = 0xFF101020;
+    fb = 0; n = 0;
+    (void)fb; (void)i; (void)n; lg2d_gpufill(0, 0, lg2d_w, lg2d_h, 0xFF101020);
     lg2d_in = 1; lg2d_frame++;
 }
 static void LG2D_EndFrame(int *fe, int *be) {
@@ -102,7 +111,7 @@ static void LG2D_EndFrame(int *fe, int *be) {
     lg2d_nfill--; lg2d_ndraw--; lg2d_fill((float)(lg2d_frame % (unsigned int)(lg2d_w - 40)), (float)(lg2d_h - 12), 40.0f, 10.0f, 0xFF00FF00);
     pb_erase_text_screen();
     lg2d_fpsf++; if (GetTickCount() - lg2d_fpst >= 1000) { lg2d_fps = lg2d_fpsf; lg2d_fpsf = 0; lg2d_fpst = GetTickCount(); }
-    pb_printat(0, 0, "LG 18z8d frame %u fps %u", lg2d_frame, lg2d_fps);
+    pb_printat(0, 0, "LG 18z8g frame %u fps %u", lg2d_frame, lg2d_fps);
     pb_printat(1, 0, "fill %u draw %u alpha %u sh0 %u", lg2d_nfill, lg2d_ndraw, lg2d_nalpha, lg2d_nsh0);
     pb_printat(2, 0, "setcolor %u shaders %u", lg2d_ncol, (unsigned int)lg2d_nsh);
     pb_printat(3, 0, "vbl %u fin %u game %u to %u", (unsigned int)lg2d_msvbl, (unsigned int)lg2d_msfin, (unsigned int)lg2d_msgame, lg2d_nto);
