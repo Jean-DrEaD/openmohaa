@@ -1,3 +1,13 @@
+# LG 18z9b: headers USB do nxdk (XID) p/ lg_input.c
+if(DEFINED ENV{NXDK_DIR})
+  set(LG_NXDK "$ENV{NXDK_DIR}")
+else()
+  set(LG_NXDK "/usr/src/nxdk")
+endif()
+if(EXISTS "${LG_NXDK}/lib/usb/libusbohci/inc")
+  include_directories("${LG_NXDK}/lib/usb/libusbohci/inc" "${LG_NXDK}/lib/usb/libusbohci_xbox")
+  add_compile_definitions(USBH_USE_EXTERNAL_CONFIG="usbh_config_xbox.h")
+endif()
 if(NOT BUILD_CLIENT)
     return()
 endif()
@@ -176,6 +186,6 @@ endif()
 
 # LG18h: stubs de link + OpenAL sem dllimport
 if(NXDK)
-    target_sources(${CLIENT_BINARY} PRIVATE ${SOURCE_DIR}/renderernull/lg_client_stubs.c)
+    target_sources(${CLIENT_BINARY} PRIVATE ${SOURCE_DIR}/renderernull/lg_client_stubs.c ${SOURCE_DIR}/renderernull/lg_input.c)
     target_compile_definitions(${CLIENT_BINARY} PRIVATE AL_LIBTYPE_STATIC)
 endif()
