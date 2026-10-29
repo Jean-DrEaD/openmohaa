@@ -1,3 +1,4 @@
+#define LG_WD_NOPRINT(...) ((void)0) /* LG 18z9j: watchdog sem tela (corrida pbkit) */
 /* LG 18z9f watchdog */
 #include <windows.h>
 #include <hal/debug.h>
@@ -9,11 +10,11 @@ static DWORD WINAPI lg_wd_thread(LPVOID p) {
   int last = -1, still = 0; (void)p;
   for (;;) {
     Sleep(500);
-    if (lg_wd != last) { if (still >= 6) pb_show_front_screen(); last = lg_wd; still = 0; continue; }
+    if (lg_wd != last) { if (still >= 6) ((void)0); last = lg_wd; still = 0; continue; }
     still++;
-    if (still == 6) pb_show_debug_screen();
+    if (still == 6) ((void)0);
     if (still == 6 || (still > 6 && (still % 8) == 0))
-      debugPrint("LG WD frame %d cm %d ev %d ps %d pl %d pm %d s5 %d s6 %d\n",
+      LG_WD_NOPRINT("LG WD frame %d cm %d ev %d ps %d pl %d pm %d s5 %d s6 %d\n",
         lg_wd, lg_st[0], lg_st[1], lg_st[3], lg_st[5], lg_st[4], lg_st[6], lg_st[7]);
   }
   return 0;
