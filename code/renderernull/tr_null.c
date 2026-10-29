@@ -1,3 +1,5 @@
+static void lgf_DrawString(fontheader_t *font, const char *text, float x, float y, int maxlen, const float *pv); /* LG 18z8p */
+void lgf_load(const char *name, fontheader_sgl_t *s); /* LG 18z8p */
 int lg_dbg[8]; /* LG 18z8n-c */
 /* LG lote 18e: renderer nulo (tela preta) para validar o build cliente no nxdk. */
 #include "../qcommon/q_shared.h"
@@ -21,7 +23,7 @@ static fontheader_t *lg_null_LoadFont(const char *name) {
         for (c = 0; c < 256; c++) { s->indirection[c] = c; s->locations[c].size[0] = 8.0f / 256.0f; }
         s->height = 16.0f; s->aspectRatio = 1.0f;
         Q_strncpyz(s->name, name, sizeof(s->name));
-        f->numPages = 0; f->sgl[0] = s;
+        f->numPages = 0; f->sgl[0] = s; lgf_load(name, s); /* LG 18z8p */
     }
     return &lg_null_fonts[lg_null_nfonts++];
 }
@@ -182,7 +184,7 @@ static void LG2D_EndFrame(int *fe, int *be) {
     pb_erase_text_screen();
     lg2d_fpsf++; if (GetTickCount() - lg2d_fpst >= 1000) { lg2d_fps = lg2d_fpsf; lg2d_fpsf = 0; lg2d_fpst = GetTickCount(); }
     lg2d_dbgblit((int)lg2d_nsh); /* LG 18z8k */
-    pb_printat(0, 0, "LG 18z8n-e frame %u fps %u", lg2d_frame, lg2d_fps);
+    pb_printat(0, 0, "LG 18z8p frame %u fps %u", lg2d_frame, lg2d_fps);
     pb_printat(1, 0, "fill %u draw %u alpha %u sh0 %u", lg2d_nfill, lg2d_ndraw, lg2d_nalpha, lg2d_nsh0);
     pb_printat(2, 0, "setcolor %u shaders %u q %u up %u x%d", lg2d_ncol, (unsigned int)lg2d_nsh, lg2d_nq, lg_nup, lgx_st); lg2d_nq = 0; pb_printat(4, 0, "tga ok %u fail %u dec %u t%d %dx%d b%d", lg_tga_ok, lg_tga_fail, lg_ndec, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); if (0) pb_printat(4, 0, "%u", lg_tga_ok, lg_tga_fail, lg_tga_t, lg_tga_w, lg_tga_h, lg_tga_bpp); { int i0 = lg2d_nsh > 18 ? lg2d_nsh - 18 : 0, r; for (r = 0; i0 + r < lg2d_nsh; r++) pb_printat(5 + r, 0, "%c %-34.34s", lg_sh_st[i0 + r], lg2d_shn[i0 + r]); }
     pb_printat(3, 0, "s%d a%d r%d d%d c%d v%d", lg_dbg[0], lg_dbg[1] % 10000, lg_dbg[2] % 10000, lg_dbg[3] % 10000, lg_dbg[4] % 10000, lg_dbg[5] % 10000); /* LG 18z8n-c */
@@ -281,7 +283,8 @@ lg2d_init();
 
 lgNullRi.Printf(PRINT_ALL, "LG: renderer nulo (18e)\n");
 lgNullRe.LoadFont = lg_null_LoadFont; /* LG 18m */
-return &lgNullRe;
+LG_SET(DrawString, lgf_DrawString); /* LG 18z8p */
+    return &lgNullRe;
 }
 
 qboolean R_ImageExists(const char *name)
@@ -291,4 +294,81 @@ return qfalse;
 }
 #ifdef NXDK
 #include "lg_nv2a.c"
+#endif
+
+/* LG 18z8p: fonte real (.RitualFont + gfx/fonts/<nome>.tga) e DrawString por caractere via DrawStretchPic */
+#ifdef NXDK
+static fontheader_sgl_t lgf_tmp;
+static int lgf_nreal = 0;
+static unsigned int lgf_nch = 0;
+static int lgf_parse(const char *name, fontheader_sgl_t *s) {
+    char *buf = 0, *ref; const char *tok; int i, ok = 0; float h = 0, asp = 0;
+    if (!lg2d_ri || !lg2d_ri->FS_ReadFile) return 0;
+    if (lg2d_ri->FS_ReadFile(va("fonts/%s.RitualFont", name), (void **)&buf) <= 0 || !buf) return 0;
+    memset(&lgf_tmp, 0, sizeof(lgf_tmp));
+    ref = buf;
+    for (;;) {
+        tok = COM_Parse(&ref);
+        if (!tok || !tok[0]) break;
+        if (!Q_stricmp(tok, "RitFont")) continue;
+        if (!Q_stricmp(tok, "height")) { h = (float)atof(COM_Parse(&ref)); continue; }
+        if (!Q_stricmp(tok, "aspect")) { asp = (float)atof(COM_Parse(&ref)); continue; }
+        if (!Q_stricmp(tok, "indirections")) {
+            COM_Parse(&ref);
+            for (i = 0; i < 256; i++) lgf_tmp.indirection[i] = atoi(COM_Parse(&ref));
+            COM_Parse(&ref); continue;
+        }
+        if (!Q_stricmp(tok, "locations")) {
+            if (asp <= 0) break;
+            COM_Parse(&ref);
+            for (i = 0; i < 256; i++) {
+                COM_Parse(&ref);
+                lgf_tmp.locations[i].pos[0] = (float)atof(COM_Parse(&ref)) / 256.0f;
+                lgf_tmp.locations[i].pos[1] = (float)atof(COM_Parse(&ref)) * asp / 256.0f;
+                lgf_tmp.locations[i].size[0] = (float)atof(COM_Parse(&ref)) / 256.0f;
+                lgf_tmp.locations[i].size[1] = (float)atof(COM_Parse(&ref)) * asp / 256.0f;
+                COM_Parse(&ref);
+            }
+            COM_Parse(&ref); ok = 1; continue;
+        }
+        break;
+    }
+    lg2d_ri->FS_FreeFile(buf);
+    if (!ok || h <= 0 || asp <= 0) return 0;
+    memcpy(s->indirection, lgf_tmp.indirection, sizeof(s->indirection));
+    memcpy(s->locations, lgf_tmp.locations, sizeof(s->locations));
+    s->height = h; s->aspectRatio = asp;
+    return 1;
+}
+void lgf_load(const char *name, fontheader_sgl_t *s) {
+    const char *src = name; char *t = 0; int h = 0;
+    if (!lg2d_ri || !lg2d_ri->FS_ReadFile) return;
+    if (lg2d_ri->FS_ReadFile(va("gfx/fonts/%s.tga", name), (void **)&t) > 0 && t) lg2d_ri->FS_FreeFile(t);
+    else src = "verdana-12";
+    if (!lgf_parse(src, s)) return;
+    if (lgNullRe.RegisterShaderNoMip) h = lgNullRe.RegisterShaderNoMip(va("gfx/fonts/%s", src));
+    s->shader = (void *)(intptr_t)h; s->trhandle = 0x4C47; lgf_nreal++;
+}
+static void lgf_DrawString(fontheader_t *font, const char *text, float x, float y, int maxlen, const float *pv) {
+    fontheader_sgl_t *s; float sx = x, ch, w; int i, ix; qhandle_t h;
+    (void)pv;
+    if (!font || !text || !lgNullRe.DrawStretchPic) return;
+    s = font->sgl[0];
+    if (!s || s->trhandle != 0x4C47) return;
+    h = (qhandle_t)(intptr_t)s->shader; ch = s->height;
+    for (i = 0; text[i] && (maxlen < 0 || i < maxlen); i++) {
+        unsigned char c = (unsigned char)text[i]; letterloc_t *l;
+        if (c == '\n') { x = sx; y += ch; continue; }
+        if (c == '\r') { x = sx; continue; }
+        if (c == '\t') c = ' ';
+        ix = s->indirection[c];
+        if (ix < 0 || ix > 255) { ix = s->indirection['?']; if (ix < 0 || ix > 255) continue; }
+        l = &s->locations[ix]; w = l->size[0] * 256.0f;
+        if (c != ' ') lgNullRe.DrawStretchPic(x, y, w, ch, l->pos[0], l->pos[1], l->pos[0] + l->size[0], l->pos[1] + l->size[1], h);
+        x += w; lgf_nch++;
+    }
+}
+#else
+void lgf_load(const char *name, fontheader_sgl_t *s) { (void)name; (void)s; }
+static void lgf_DrawString(fontheader_t *font, const char *text, float x, float y, int maxlen, const float *pv) { (void)font; (void)text; (void)x; (void)y; (void)maxlen; (void)pv; }
 #endif
