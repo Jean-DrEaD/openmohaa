@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef __cplusplus
 extern "C"
 #endif
-extern int lg_dbg[8]; /* LG 18z8n-c */
+extern "C" int lg_dbg[8]; /* LG 18z8n-c */
 
 CLASS_DECLARATION(UIWidget, View3D, NULL) {
     {&W_Activated,     &View3D::OnActivate  },

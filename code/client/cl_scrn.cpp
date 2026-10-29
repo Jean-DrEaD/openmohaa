@@ -26,8 +26,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef __cplusplus
 extern "C"
 #endif
-extern int lg_dbg[8]; /* LG 18z8n-c */
-extern int lg_dbg2[8]; /* LG 18z9c */
+extern "C" int lg_dbg[8]; /* LG 18z8n-c */
+extern "C" int lg_dbg2[8]; /* LG 18z9c */
 
 qboolean	scr_initialized;		// ready to draw
 stereoFrame_t	s_scr_stereoFrame;

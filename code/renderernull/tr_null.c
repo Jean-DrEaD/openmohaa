@@ -1,5 +1,11 @@
+#ifdef __cplusplus
+extern "C" {
+#endif /* LG 18z9c2 */
 int lg_dbg[8]; /* LG 18z8n-c */
 int lg_dbg2[8]; /* LG 18z9c */
+#ifdef __cplusplus
+}
+#endif
 /* LG lote 18e: renderer nulo (tela preta) para validar o build cliente no nxdk. */
 #include "../qcommon/q_shared.h"
 #include "../renderercommon/tr_public.h"
