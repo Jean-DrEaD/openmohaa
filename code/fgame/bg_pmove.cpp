@@ -1,5 +1,5 @@
 #ifdef NXDK /* LG 18z9f */
-extern "C" volatile int lg_st[8];
+extern "C" __declspec(selectany) volatile int lg_st[8] = {0}; /* LG 18z9g */
 #endif
 /*
 ===========================================================================

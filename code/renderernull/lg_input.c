@@ -2,17 +2,17 @@
 #include <windows.h>
 #include <hal/debug.h>
 #include <pbkit/pbkit.h>
-volatile int lg_st[8];
+extern volatile int lg_st[8]; /* LG 18z9g */
 volatile int lg_wd;
 static int lg_wd_on;
 static DWORD WINAPI lg_wd_thread(LPVOID p) {
   int last = -1, still = 0; (void)p;
   for (;;) {
     Sleep(500);
-    if (lg_wd != last) { last = lg_wd; still = 0; continue; }
+    if (lg_wd != last) { if (still >= 6) pb_show_front_screen(); last = lg_wd; still = 0; continue; }
     still++;
-    if (still == 3) pb_show_debug_screen();
-    if (still == 3 || (still % 8) == 0)
+    if (still == 6) pb_show_debug_screen();
+    if (still == 6 || (still > 6 && (still % 8) == 0))
       debugPrint("LG WD frame %d cm %d ev %d ps %d pl %d pm %d s5 %d s6 %d\n",
         lg_wd, lg_st[0], lg_st[1], lg_st[3], lg_st[5], lg_st[4], lg_st[6], lg_st[7]);
   }
