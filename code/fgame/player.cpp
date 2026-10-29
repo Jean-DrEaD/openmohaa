@@ -5395,8 +5395,10 @@ void Player::EvaluateState(State *forceTorso, State *forceLegs)
         if (count > 10) {
             gi.DPrintf("Possible infinite loop in state '%s'\n", currentState_Torso->getName());
             if (count > 20) {
+#ifndef NXDK /* LG 18z9e */
                 assert(0);
                 gi.Error(ERR_DROP, "Stopping due to possible infinite state loop\n");
+#endif
                 break;
             }
         }
@@ -5537,8 +5539,10 @@ void Player::EvaluateState(State *forceTorso, State *forceLegs)
             if (count > 10) {
                 gi.DPrintf("Possible infinite loop in state '%s'\n", currentState_Legs->getName());
                 if (count > 20) {
+#ifndef NXDK /* LG 18z9e */
                     assert(0);
                     gi.Error(ERR_DROP, "Stopping due to possible infinite state loop\n");
+#endif
                     break;
                 }
             }

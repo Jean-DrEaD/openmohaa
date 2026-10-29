@@ -472,6 +472,9 @@ State *State::Evaluate(Entity& ent, Container<Conditional *> *sent_conditionals)
 
     for (i = 1; i <= condition_indexes.NumObjects(); i++) {
         index = condition_indexes.ObjectAt(i);
+#ifdef NXDK /* LG 18z9e */
+        if (index <= 0) continue;
+#endif
         sent_conditionals->ObjectAt(index)->clearCheck();
         //conditions.ObjectAt( i )->clearCheck();
     }
@@ -495,6 +498,9 @@ const char *State::getLegAnim(Entity& ent, Container<Conditional *> *sent_condit
 
     for (i = 1; i <= condition_indexes.NumObjects(); i++) {
         index = condition_indexes.ObjectAt(i);
+#ifdef NXDK /* LG 18z9e */
+        if (index <= 0) continue;
+#endif
         sent_conditionals->ObjectAt(index)->clearCheck();
         //conditions.ObjectAt( i )->clearCheck();
     }
@@ -517,6 +523,9 @@ const char *State::getActionAnim(Entity& ent, Container<Conditional *> *sent_con
 
     for (i = 1; i <= condition_indexes.NumObjects(); i++) {
         index = condition_indexes.ObjectAt(i);
+#ifdef NXDK /* LG 18z9e */
+        if (index <= 0) continue;
+#endif
         sent_conditionals->ObjectAt(index)->clearCheck();
     }
 
