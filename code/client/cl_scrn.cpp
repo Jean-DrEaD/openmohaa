@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 extern "C"
 #endif
 extern int lg_dbg[8]; /* LG 18z8n-c */
+extern int lg_dbg2[8]; /* LG 18z9c */
 
 qboolean	scr_initialized;		// ready to draw
 stereoFrame_t	s_scr_stereoFrame;
@@ -438,6 +439,7 @@ This will be called twice if rendering in stereo mode
 */
 void SCR_DrawScreenField( void ) {
     lg_dbg[0] = (int)clc.state; /* LG 18z8n-c */
+lg_dbg2[0] = (int)cl.snap.ps.origin[0]; lg_dbg2[1] = (int)cl.snap.ps.origin[1]; lg_dbg2[2] = (int)cl.snap.ps.origin[2]; lg_dbg2[3] = (int)cl.viewangles[1]; lg_dbg2[4] = (int)cl.viewangles[0]; lg_dbg2[5] = Key_GetCatcher(); /* LG 18z9c */
 	// wide aspect ratio screens need to have the sides cleared
 	// unless they are displaying game renderings
 	if ( clc.state != CA_ACTIVE && clc.state != CA_CINEMATIC ) {

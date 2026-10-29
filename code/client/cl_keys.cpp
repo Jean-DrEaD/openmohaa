@@ -1059,8 +1059,10 @@ CL_KeyEvent
 Called by the system for both key up and key down events
 ===================
 */
+extern int lg_dbg[8]; /* LG 18z9c */
 void CL_KeyEvent(int key, qboolean down, unsigned time)
 {
+    if (down) lg_dbg[6] = key; /* LG 18z9c */
     char *kb;
     char  cmd[1024];
 
