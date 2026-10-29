@@ -1,3 +1,6 @@
+#ifdef NXDK /* LG 18z9f */
+extern "C" volatile int lg_st[8];
+#endif
 /*
 ===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
@@ -1301,7 +1304,7 @@ void PmoveSingle(pmove_t *pmove)
 
     // this counter lets us debug movement problems with a journal
     // by setting a conditional breakpoint fot the previous frame
-    c_pmove++;
+    c_pmove++; lg_st[3]++;
 
     // clear results
     pm->numtouch   = 0;
@@ -1541,6 +1544,7 @@ void Pmove(pmove_t *pmove)
         }
 
         pmove->cmd.serverTime = pmove->ps->commandTime + msec;
+        lg_st[5]++;
         PmoveSingle(pmove);
     }
 }

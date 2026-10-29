@@ -1,3 +1,23 @@
+/* LG 18z9f watchdog */
+#include <windows.h>
+#include <hal/debug.h>
+#include <pbkit/pbkit.h>
+volatile int lg_st[8];
+volatile int lg_wd;
+static int lg_wd_on;
+static DWORD WINAPI lg_wd_thread(LPVOID p) {
+  int last = -1, still = 0; (void)p;
+  for (;;) {
+    Sleep(500);
+    if (lg_wd != last) { last = lg_wd; still = 0; continue; }
+    still++;
+    if (still == 3) pb_show_debug_screen();
+    if (still == 3 || (still % 8) == 0)
+      debugPrint("LG WD frame %d cm %d ev %d ps %d pl %d pm %d s5 %d s6 %d\n",
+        lg_wd, lg_st[0], lg_st[1], lg_st[3], lg_st[5], lg_st[4], lg_st[6], lg_st[7]);
+  }
+  return 0;
+}
 /* LG 18z9b: pad Xbox (XID) -> eventos OpenMoHAA. Base ioQ3-Xbox xbox_input.c, sem HID (nxdk_usb.lib sem usbh_hid). */
 #include <string.h>
 #include <usb.h>
@@ -126,6 +146,7 @@ lgi_started = 1;
 
 void IN_Frame(void)
 {
+  lg_wd++; if (!lg_wd_on) { lg_wd_on = 1; CreateThread(NULL, 0, lg_wd_thread, NULL, 0, NULL); }
 int port, i, time, ms, menu, npads = 0;
 if (!lgi_started) IN_Init(NULL);
 usbh_pooling_hubs();

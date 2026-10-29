@@ -1,3 +1,6 @@
+#ifdef NXDK /* LG 18z9f */
+extern "C" volatile int lg_st[8];
+#endif
 /*
 ===========================================================================
 Copyright (C) 2024 the OpenMoHAA team
@@ -4116,7 +4119,9 @@ void Player::ClientMove(usercmd_t *ucmd)
         Vector oldpos(origin);
 
         SetMoveInfo(&pm, ucmd);
+        lg_st[0] = 1;
         Pmove(&pm);
+        lg_st[0] = 2;
         GetMoveInfo(&pm);
 
         if (!g_playerStacking->integer // Changed in OPM: determine if standing on another player's head is allowed
@@ -4712,7 +4717,9 @@ void Player::Think(void)
     } else {
         CheckMoveFlags();
         if (!(client->ps.pm_flags & PMF_FROZEN)) {
+            lg_st[1] = 1;
             EvaluateState();
+            lg_st[1] = 2;
         }
     }
 
