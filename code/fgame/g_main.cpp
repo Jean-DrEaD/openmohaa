@@ -1,3 +1,4 @@
+extern "C" void debugPrint(const char *format, ...); /* LG 18z9i */
 extern "C" volatile int lg_st[8]; /* LG 18z9h */
 /*
 ===========================================================================
@@ -1554,7 +1555,7 @@ qboolean G_ArchiveLevel(
         G_ArchiveSmokeSprites(arc);
 
         currentArc = &arc;
-        lg_st[6] = 1; gi.ArchiveLevel(arc.Loading()); lg_st[6] = 2;
+        lg_st[6] = 1; debugPrint("LG s6 1\n"); gi.ArchiveLevel(arc.Loading()); lg_st[6] = 2; debugPrint("LG s6 2\n");
         currentArc = NULL;
 
         PathSearch::ArchiveDynamic(arc);
@@ -1578,7 +1579,7 @@ qboolean G_ArchiveLevel(
             gi.Printf(HUD_MESSAGE_YELLOW "%s\n", gi.LV_ConvertString("Game Loaded"));
         } else {
             arc.Close();
-            lg_st[6] = 3; gi.Printf(HUD_MESSAGE_YELLOW "%s\n", gi.LV_ConvertString("Game Saved"));
+            lg_st[6] = 3; debugPrint("LG s6 3\n"); gi.Printf(HUD_MESSAGE_YELLOW "%s\n", gi.LV_ConvertString("Game Saved"));
         }
 
         return qtrue;

@@ -1,3 +1,4 @@
+void debugPrint(const char *format, ...); /* LG 18z9i */
 extern volatile int lg_st[8]; /* LG 18z9h */
 /*
 ===========================================================================
@@ -2253,7 +2254,7 @@ qboolean SV_ArchiveLevelFile(qboolean loading, qboolean autosave)
 		}
 	} else {
 		cls.savedCgameStateSize = cge->CG_SaveStateToBuffer(&cls.savedCgameState, svs.time);
-		lg_st[5] = 4; ge->WriteLevel(name, autosave, (byte **)&cls.savedCgameState, &cls.savedCgameStateSize); lg_st[5] = 5;
+		lg_st[5] = 4; debugPrint("LG s5 4\n"); ge->WriteLevel(name, autosave, (byte **)&cls.savedCgameState, &cls.savedCgameStateSize); lg_st[5] = 5; debugPrint("LG s5 5\n");
 		Z_Free(cls.savedCgameState);
 		cls.savedCgameState = NULL;
 	}
@@ -2597,7 +2598,7 @@ void SV_SaveGame(const char *gamename, qboolean autosave)
 		return;
 	}
 
-	lg_st[5] = 1; Com_Printf("Saving to %s", name); lg_st[5] = 2;
+	lg_st[5] = 1; debugPrint("LG s5 1\n"); Com_Printf("Saving to %s", name); lg_st[5] = 2; debugPrint("LG s5 2\n");
 	if (autosave) {
 		Com_Printf(" (autosave)...\n");
 	} else {
@@ -2606,7 +2607,7 @@ void SV_SaveGame(const char *gamename, qboolean autosave)
 
 	Q_strncpyz(svs.gameName, name, sizeof(svs.gameName));
 
-	lg_st[5] = 3; if (!SV_ArchiveLevelFile(qfalse, autosave)) {
+	lg_st[5] = 3; debugPrint("LG s5 3\n"); if (!SV_ArchiveLevelFile(qfalse, autosave)) {
 		if (cls.savedCgameState) {
 			Z_Free(cls.savedCgameState);
 			cls.savedCgameState = 0;
