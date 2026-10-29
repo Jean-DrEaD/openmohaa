@@ -112,6 +112,10 @@ Key_SetBinding(K_JOY5, "weapprev");
 Key_SetBinding(K_JOY6, "+speed");
 Key_SetBinding(K_JOY7, "+attacksecondary");
 Key_SetBinding(K_JOY8, "+attackprimary");
+Key_SetBinding(K_UPARROW, "+forward"); /* LG 18z9d */
+Key_SetBinding(K_DOWNARROW, "+back");
+Key_SetBinding(K_LEFTARROW, "+moveleft");
+Key_SetBinding(K_RIGHTARROW, "+moveright");
 Cvar_Set("j_yaw", "-0.006");
 Cvar_Set("j_pitch", "0.005");
 Cvar_Set("j_forward", "-0.0039");
