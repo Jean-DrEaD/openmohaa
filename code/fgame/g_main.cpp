@@ -1,3 +1,4 @@
+extern "C" volatile int lg_st[8]; /* LG 18z9h */
 /*
 ===========================================================================
 Copyright (C) 2024 the OpenMoHAA team
@@ -1553,7 +1554,7 @@ qboolean G_ArchiveLevel(
         G_ArchiveSmokeSprites(arc);
 
         currentArc = &arc;
-        gi.ArchiveLevel(arc.Loading());
+        lg_st[6] = 1; gi.ArchiveLevel(arc.Loading()); lg_st[6] = 2;
         currentArc = NULL;
 
         PathSearch::ArchiveDynamic(arc);
@@ -1577,7 +1578,7 @@ qboolean G_ArchiveLevel(
             gi.Printf(HUD_MESSAGE_YELLOW "%s\n", gi.LV_ConvertString("Game Loaded"));
         } else {
             arc.Close();
-            gi.Printf(HUD_MESSAGE_YELLOW "%s\n", gi.LV_ConvertString("Game Saved"));
+            lg_st[6] = 3; gi.Printf(HUD_MESSAGE_YELLOW "%s\n", gi.LV_ConvertString("Game Saved"));
         }
 
         return qtrue;

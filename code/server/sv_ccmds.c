@@ -1,3 +1,4 @@
+extern volatile int lg_st[8]; /* LG 18z9h */
 /*
 ===========================================================================
 Copyright (C) 1999-2005 Id Software, Inc.
@@ -2252,7 +2253,7 @@ qboolean SV_ArchiveLevelFile(qboolean loading, qboolean autosave)
 		}
 	} else {
 		cls.savedCgameStateSize = cge->CG_SaveStateToBuffer(&cls.savedCgameState, svs.time);
-		ge->WriteLevel(name, autosave, (byte **)&cls.savedCgameState, &cls.savedCgameStateSize);
+		lg_st[5] = 4; ge->WriteLevel(name, autosave, (byte **)&cls.savedCgameState, &cls.savedCgameStateSize); lg_st[5] = 5;
 		Z_Free(cls.savedCgameState);
 		cls.savedCgameState = NULL;
 	}
@@ -2596,7 +2597,7 @@ void SV_SaveGame(const char *gamename, qboolean autosave)
 		return;
 	}
 
-	Com_Printf("Saving to %s", name);
+	lg_st[5] = 1; Com_Printf("Saving to %s", name); lg_st[5] = 2;
 	if (autosave) {
 		Com_Printf(" (autosave)...\n");
 	} else {
@@ -2605,7 +2606,7 @@ void SV_SaveGame(const char *gamename, qboolean autosave)
 
 	Q_strncpyz(svs.gameName, name, sizeof(svs.gameName));
 
-	if (!SV_ArchiveLevelFile(qfalse, autosave)) {
+	lg_st[5] = 3; if (!SV_ArchiveLevelFile(qfalse, autosave)) {
 		if (cls.savedCgameState) {
 			Z_Free(cls.savedCgameState);
 			cls.savedCgameState = 0;
