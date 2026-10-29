@@ -1,5 +1,3 @@
-static void lgf_DrawString(fontheader_t *font, const char *text, float x, float y, int maxlen, const float *pv); /* LG 18z8p */
-void lgf_load(const char *name, fontheader_sgl_t *s); /* LG 18z8p */
 int lg_dbg[8]; /* LG 18z8n-c */
 /* LG lote 18e: renderer nulo (tela preta) para validar o build cliente no nxdk. */
 #include "../qcommon/q_shared.h"
@@ -10,6 +8,8 @@ int lg_dbg[8]; /* LG 18z8n-c */
 static fontheader_t lg_null_fonts[16];
 static int lg_null_nfonts = 0;
 static fontheader_sgl_t lg_null_sgl[16]; /* LG 18v */
+static void lgf_DrawString(fontheader_t *font, const char *text, float x, float y, int maxlen, const float *pv); /* LG 18z8p */
+void lgf_load(const char *name, fontheader_sgl_t *s); /* LG 18z8p */
 static fontheader_t *lg_null_LoadFont(const char *name) {
     int i;
     for (i = 0; i < lg_null_nfonts; i++) { if (!Q_stricmp(lg_null_fonts[i].name, name)) return &lg_null_fonts[i]; }
